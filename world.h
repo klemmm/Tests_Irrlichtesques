@@ -4,7 +4,7 @@
 #include <memory>
 #include <irrlicht/irrlicht.h>
 #include "kbd_status.h"
-#include "building.h"
+#include "chunk.h"
 
 class World {
 
@@ -23,9 +23,12 @@ private:
     irr::core::quaternion _camera_orientation;
     irr::core::vector3df _camera_position;
 
-    std::unique_ptr<Building> _testBuilding;
+    std::unique_ptr<Chunk> _testChunk, _testChunk2;
 
+    bool _wasLeftPressed;
+    bool _wasRightPressed;
 
+    irr::s32 _hilighted;
 };
 
 #endif

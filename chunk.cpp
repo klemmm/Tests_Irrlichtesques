@@ -1,7 +1,8 @@
 #include <irrlicht/irrlicht.h>
 
-#include "building.h"
+#include "chunk.h"
 #include "assets.h"
+#include "transforms.h"
 #include "constants.h"
 
 using namespace irr;
@@ -9,15 +10,24 @@ using namespace core;
 using namespace scene;
 using namespace video;
 
-Building::Building(irr::scene::ISceneManager *smgr) : Entity(smgr) {
+irr::s32 Chunk::_next_id = 0;
+std::map<irr::s32, Chunk*>  Chunk::_map;
+
+Chunk::Chunk(irr::scene::ISceneManager *smgr) : Entity(smgr) {
         
         _mesh = new SMesh();
         _meshBuffer = new SMeshBuffer();       
         _mesh->addMeshBuffer(_meshBuffer);
-        _node = nullptr;         
+        _node = nullptr;  
+        _selector = nullptr;       
+        _hasHilight = false;
+        _chunk_id = _next_id;
+        _next_id++;
+        _map[_chunk_id] = this;
 }
 
-void Building::updateMesh(const TextureId &texture_id) {
+
+void Chunk::updateMesh(const TextureId &texture_id) {
         if (_node != nullptr)
                 _node->remove();
 
@@ -28,9 +38,15 @@ void Building::updateMesh(const TextureId &texture_id) {
         _meshBuffer->Indices.set_used(36 * blocks.size());
 
         int i = 0;
-        SColor color = SColor(255,255,255,255);
+        
         vector2df tstep = TextureLoader::getStep(texture_id);
-        for (auto iter = blocks.begin(); iter != blocks.end(); iter++, i++) {  
+        if (_selector != nullptr)
+                _selector->drop();
+        
+                
+        for (auto iter = blocks.begin(); iter != blocks.end(); iter++, i++) {
+                SColor color = (_hasHilight && _hilighted == (*iter).where) ? SColor(255,255,255,255) : SColor(255,128,128,128);
+                
                 // Up
                 _meshBuffer->Vertices[i * 24 + 0] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + 0, (*iter).texture_coords.Y*tstep.Y + tstep.Y);
                 _meshBuffer->Vertices[i * 24 + 1] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
@@ -76,17 +92,29 @@ void Building::updateMesh(const TextureId &texture_id) {
                         _meshBuffer->Indices[i * 36 + side * 6 + 5] = i * 24 + side * 4 + 0;
                 }                                                        
         }
+        _mesh->recalculateBoundingBox();
 
+        
         _node = _smgr -> addOctreeSceneNode(_mesh, 0, -1, 1024);
-        _node->setPosition(vector3df(0, 1000, 0));
+        _node->setPosition(_position);
+        _node->setID(_chunk_id);
+        Transforms::orient_node(*_node, _rotation);
+
         _node->setMaterialFlag(video::EMF_BACK_FACE_CULLING, true);
         _node->setAutomaticCulling(EAC_FRUSTUM_SPHERE);
         _node->setMaterialFlag(EMF_LIGHTING, false);
         _node->setMaterialFlag(EMF_NORMALIZE_NORMALS, true); 
         _node->setMaterialTexture(0, TextureLoader::get(texture_id));
-  
+        _selector = _smgr->createOctreeTriangleSelector(_mesh, _node, 128);  
 }
 
-void Building::process(float delta) {
+void Chunk::process(float delta) {
 
+}
+
+
+Chunk* Chunk::getChunkFromId(irr::s32 id) {
+        if (Chunk::_map.find(id) != Chunk::_map.end()) {
+                return Chunk::_map[id];
+        } else return nullptr;
 }

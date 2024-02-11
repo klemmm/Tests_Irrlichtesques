@@ -3,8 +3,8 @@
 
 class Constants {
     public:
-    static const int WIDTH = 1600;
-    static const int HEIGHT = 900;
+    static const int WIDTH = 1920;
+    static const int HEIGHT = 1080;
 
 
     static const int BLOCK_SIZE = 50;

@@ -3,6 +3,7 @@
 #include "assets.h"
 #include "world.h"
 #include "transforms.h"
+#include "constants.h"
 
 using namespace irr;
 using namespace core;
@@ -13,21 +14,27 @@ using namespace video;
 #define SPEED 500.0 /* irrlicht space unit/sec */
 #define MOUSE_SENSITIVITY 1.0
 
-World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr) {
+World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _wasLeftPressed(false), _wasRightPressed(false), _hilighted(-1) {
     _camera = _smgr->addCameraSceneNode();
     _camera->setFarValue(10000);
 
-    _testBuilding = std::unique_ptr<Building>(new Building(_smgr));
-    for (int k = 20; k > 10; k = k - 2) {
-        for (int i = 0; i < k; i++) {
-            for (int j = 0; j < k; j++) {
-                _testBuilding->addBlock(vector3di(i, j, k/2), vector2di(1 - ((i == 0) || (i == k-1) || (j == 0) || (j == k-1)), 0));
-            }
-        }
-    }
+    _testChunk = std::unique_ptr<Chunk>(new Chunk(_smgr));
+    for (int i = 0; i < 10; i++)
+        _testChunk->addBlock(vector3di(0, i, 0), vector2di(0, 0));
     
+
+    _testChunk->setPosition(vector3df(100, 100, 100));
+    _testChunk->setRotation(quaternion(0, 0, 0));
+    _testChunk->updateMesh(TextureId::DEFAULT);
+
+    _testChunk2 = std::unique_ptr<Chunk>(new Chunk(_smgr));
+    for (int i = 0; i < 10; i++)
+        _testChunk2->addBlock(vector3di(0, i, 0), vector2di(0, 0));
     
-    _testBuilding->updateMesh(TextureId::DEFAULT);
+
+    _testChunk2->setPosition(vector3df(500, 500, 500));
+    _testChunk2->setRotation(quaternion(45, 0, 0));    
+    _testChunk2->updateMesh(TextureId::DEFAULT);
     
 }
 
@@ -96,4 +103,82 @@ void World::process(float delta, IKkbdStatus &kbd, const vector2df& mouse_moveme
     _camera_position = _camera_position + movement;
 
     position_and_orient_camera(_camera_position, _camera_orientation);
+
+    core::line3d<f32> ray;
+    ray.start = _camera->getPosition();
+    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 10000.0f;
+    scene::ISceneCollisionManager* collMan = _smgr->getSceneCollisionManager();
+
+
+    vector3df collisionPoint;
+    triangle3df collisionTriangle;
+    static ISceneNode *collisionNode = nullptr;
+    
+    
+    if (!kbd.isLeftPressed() && _wasLeftPressed) {
+        _wasLeftPressed = false;
+    }
+
+    if (!kbd.isRightPressed() && _wasRightPressed) {
+        _wasRightPressed = false;
+    }
+
+    vector3di block_coords, adjacent_block_coords;
+    bool collision = false;
+    bool need_update_mesh = false;
+    Chunk *chunk = nullptr;
+
+
+    std::vector<ITriangleSelector*> selectors;
+    selectors.push_back(_testChunk->getSelector());
+    selectors.push_back(_testChunk2->getSelector());
+
+    for (auto iter = selectors.begin(); iter != selectors.end(); iter++) {
+        if (collMan->getCollisionPoint(ray, *iter, collisionPoint, collisionTriangle, collisionNode)) {
+            collision = true;
+            break;
+        }
+    }
+
+
+    if (collision) {
+        chunk = Chunk::getChunkFromId(collisionNode->getID());
+        chunk->getCollisionCoords(collisionTriangle, block_coords, adjacent_block_coords);
+        printf("Pointing to chunk %d block %d,%d,%d node=%p\n", collisionNode->getID(), block_coords.X, block_coords.Y, block_coords.Z, collisionNode);
+        _hilighted = collisionNode->getID();
+        if (chunk->hilightBlock(block_coords))
+            need_update_mesh = true;
+    } else {
+        if (_hilighted != -1) {
+            chunk = Chunk::getChunkFromId(_hilighted);
+            if (chunk) {
+                _hilighted = -1;
+                chunk->removeHilight();
+                need_update_mesh = true;
+            }
+        }
+    }
+
+    if (kbd.isLeftPressed() && !_wasLeftPressed) {
+        _wasLeftPressed = true;
+        if (collision) {
+            need_update_mesh = true;
+            chunk->delBlock(block_coords);
+        }        
+    }
+
+
+    if (kbd.isRightPressed() && !_wasRightPressed) {
+        _wasRightPressed = true;
+        if (collision) {
+            need_update_mesh = true;
+            chunk->addBlock(adjacent_block_coords, vector2di(0, 0));
+        }        
+    }
+
+
+    if (need_update_mesh) {
+        chunk->updateMesh(TextureId::DEFAULT);
+    }
+
 }

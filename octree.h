@@ -121,9 +121,20 @@ class OctreeNodeIterator {
     OctreeIterator _iter;
     Octree *_current;
     std::vector<OctreeNode*>::const_iterator _node_iter;
+    bool _empty;
 public:
-    OctreeNodeIterator(const Octree &octree) : _iter(OctreeIterator(octree)), _current(_iter.next()), _node_iter(_current->begin()) {}
+    OctreeNodeIterator(const Octree &octree) : _iter(OctreeIterator(octree)), _current(_iter.next())  {
+        if (_current) {
+            _empty = false;
+            _node_iter = _current->begin();
+        } else {
+            _empty = true;
+        }    
+    }
     inline OctreeNode *next() {
+    
+        if (_empty) return nullptr;
+
         while (_node_iter == _current->end()) {
             _current = _iter.next();
             if (!_current) return nullptr;
@@ -140,9 +151,19 @@ class OctreeBoundedNodeIterator {
     OctreeBoundedIterator _iter;
     Octree *_current;
     std::vector<OctreeNode*>::const_iterator _node_iter;
+    bool _empty;
 public:
-    OctreeBoundedNodeIterator(const Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()), _node_iter(_current->begin()) {}
+    OctreeBoundedNodeIterator(const Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
+        if (_current) {
+            _empty = false;
+            _node_iter = _current->begin();
+        } else {
+            _empty = true;
+        }
+    }
+
     inline OctreeNode *next() {
+        if (_empty) return nullptr;
         while (_node_iter == _current->end()) {
             _current = _iter.next();
             if (!_current) return nullptr;

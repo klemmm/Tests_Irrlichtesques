@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = 
 
-CXX_FLAGS = -O3 -march=native -pg -O3 -march=native -std=gnu++17
+CXX_FLAGS = -O3 -march=native -O0 -g -fsanitize=address -fsanitize=undefined -std=gnu++17
 

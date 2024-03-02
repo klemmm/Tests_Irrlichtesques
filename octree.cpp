@@ -51,8 +51,7 @@ Octree *OctreeBoundedIterator::next(void) {
         current = _stack.top().first;
         index = _stack.top().second;
         _stack.pop();
-        if (index != 8)
-            while (isDisjoint(current->_octants[index]) && index != 8) index++;
+        while (index != 8 && isDisjoint(current->_octants[index])) index++;
     } while ((index == 8) && !_stack.empty());
 
 
@@ -77,8 +76,7 @@ Octree *OctreeIterator::next(void) {
         current = _stack.top().first;
         index = _stack.top().second;
         _stack.pop();
-        if (index != 8)
-            while (current->_octants[index] == nullptr && index != 8) index++;
+        while (index != 8 && current->_octants[index] == nullptr) index++;
     } while ((index == 8) && !_stack.empty());
 
 

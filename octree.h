@@ -71,10 +71,14 @@ public:
         return _octants[0] != nullptr;
     }
 
+
+
 private:
+
+    irr::core::vector3df _corner1, _corner2;
+
     Octree *_octants[8];
     std::vector<OctreeNode*> _nodes;
-    irr::core::vector3df _corner1, _corner2;
 
     int _max_size;
     int _max_depth;
@@ -146,6 +150,7 @@ public:
         _node_iter++;
         return node;
     } 
+    inline Octree *getCurrent(void) { return _current; }
 };
 
 class OctreeBoundedNodeIterator {
@@ -175,6 +180,8 @@ public:
         _node_iter++;
         return node;
     } 
+
+    inline Octree *getCurrent(void) { return _current; }
 };
 
 

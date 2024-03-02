@@ -9,6 +9,7 @@ public:
 
     inline void thrust(irr::core::vector3df accel) {
         _velocity += accel;
+        printf("apply thr %f %f %f, vel now %f %f %f\n", accel.X, accel.Y, accel.Z, _velocity.X, _velocity.Y, _velocity.Z);
     }
     inline void brake(float brake_amount) {
         if (_velocity.getLength() <= brake_amount) {

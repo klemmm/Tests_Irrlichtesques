@@ -88,7 +88,6 @@ public:
     }
 
     void updatePositionAndOrientation() {
-        printf("update\n");
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
         while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
             chunk->updatePositionAndOrientation(); /* FIXME */

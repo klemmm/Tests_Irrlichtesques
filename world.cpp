@@ -75,7 +75,6 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     char lastbuf[256];
     auto pos = _camera->getPosition();
     bool onship = (_boarded.lock() != nullptr);
-    printf("onship %d\n", onship);
 
     static int bite = 0;
 
@@ -103,8 +102,29 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     }
     OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
 
+    std::vector<std::pair<Building*, irr::core::vector3df> > moved;
     while (Building *building = static_cast<Building*>(octiter1.next())) {
+        irr::core::vector3df old_pos = building->getPosition();
         building->process(delta);
+        Octree *octant = octiter1.getCurrent();
+        if (!octant->belongsHere(building->getPosition())) {
+            moved.push_back(std::pair<Building*, irr::core::vector3df>(building, old_pos));
+            // printf("MOOOOOOOOOOOOOOOVE %f %f %f ; %f %f %f -> %f %f %f\n", 
+            // building->getPosition().X , building->getPosition().Y, building->getPosition().Z,
+            // octant->_corner1.X, octant->_corner1.Y, octant->_corner1.Z,
+            // octant->_corner2.X, octant->_corner2.Y, octant->_corner2.Z);
+        }
+    }
+    for (auto iter = moved.begin(); iter != moved.end(); iter++) {
+        Building *tomove = (*iter).first;
+        Octree *octree = _buildings.find((*iter).second);
+        std::vector<OctreeNode*> &_nodes = octree->getNodes();
+        
+        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [tomove](OctreeNode*n) { 
+            return static_cast<Building*>(n) == tomove; }
+            ), _nodes.end());
+
+        _buildings.insert(*tomove);
     }
     
     vector3df movement;
@@ -263,7 +283,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     float distance = FLT_MAX;
     float cur_dist;
     std::shared_ptr<Building> collisionBuilding = nullptr;
-    irr::core::vector3df radius = irr::core::vector3df(500, 500, 500);
+    irr::core::vector3df radius = irr::core::vector3df(5000, 5000, 5000);
     irr::core::vector3df corner1 = _camera->getPosition() - radius;
     irr::core::vector3df corner2 = _camera->getPosition() + radius;
     OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);

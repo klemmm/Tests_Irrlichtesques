@@ -21,29 +21,30 @@ using namespace video;
 #define FORCE 500.0
 #define MAX_ROTATION 1.0 /* radian/sec */
 
-World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false) {
+World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::core::vector3df(-Constants::WORLD_SIZE, -Constants::WORLD_SIZE, -Constants::WORLD_SIZE), irr::core::vector3df(Constants::WORLD_SIZE, Constants::WORLD_SIZE, Constants::WORLD_SIZE)),_wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false) {
     _camera = _smgr->addCameraSceneNode();
     _camera->setFarValue(50000);
 
-    auto testShip1 = std::shared_ptr<Ship>(new Ship(_smgr));
+    Ship *testShip1 = new Ship(_smgr);
     
     for (int i = 0; i < 3; i++)
         testShip1->addBlock(vector3di(0, 0, i), vector2di(0, 0));
     
     testShip1->updateMesh(TextureId::DEFAULT);
 
-    _buildings.push_back(testShip1);
+    _buildings.insert(*testShip1);
 
 
-    auto testShip2 = std::shared_ptr<Building>(new Building(_smgr));
+    Building *testShip2 = new Building(_smgr);
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 4; i++)
         testShip2->addBlock(vector3di(0, i, 0), vector2di(0, 1));
     
     testShip2->setPosition(vector3df(500, 500, 500));
     testShip2->setOrientation(quaternion(45, 45, 45));
     testShip2->updateMesh(TextureId::DEFAULT);
-    _buildings.push_back(testShip2);
+    _buildings.insert(*testShip2);
+    
 
     scene::ISceneNode* skybox = _smgr->addSkyBoxSceneNode(
         TextureLoader::get(SKYBOX_UP),
@@ -74,15 +75,25 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     char lastbuf[256];
     auto pos = _camera->getPosition();
     bool onship = (_boarded.lock() != nullptr);
-
-    std::shared_ptr<Building> ship1 = _buildings.front();
-    std::shared_ptr<Building> ship2 = _buildings.back();
-
+    printf("onship %d\n", onship);
 
     static int bite = 0;
 
     bite = (bite + 1) % 8;
-    bool bonk = ship1->bonk(ship2);
+    bool bonk = false;
+    
+    OctreeNodeIterator octiterX = OctreeNodeIterator(_buildings);
+
+    while (Building *buildingX = static_cast<Building*>(octiterX.next())) {
+        OctreeNodeIterator octiterY = OctreeNodeIterator(_buildings);
+        while (Building *buildingY = static_cast<Building*>(octiterY.next())) {
+            if (buildingX != buildingY) {
+                auto *by = new std::shared_ptr<Building>(buildingY);
+                bonk |= buildingX->bonk(*by);
+            }
+        }
+    }
+
     if (bite == 0) {
         snprintf(buf, 256, " %s | Pos: %.2f,%.2f,%.2f | %s%s |",  bonk ? "BONK !!!" : "", pos.X, pos.Y, pos.Z,  !onship ? "Not on any ship." : "On a ship.", onship ? (_piloting ? " (Piloting)" : " (Passenger)") : "");
         if (strcmp(buf, lastbuf)) {
@@ -90,9 +101,12 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             strcpy(lastbuf, buf);
         }
     }
-    for (auto iter = _buildings.begin(); iter != _buildings.end(); iter++) {
-        (*iter)->process(delta);
+    OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
+
+    while (Building *building = static_cast<Building*>(octiter1.next())) {
+        building->process(delta);
     }
+    
     vector3df movement;
     quaternion rotation;
 
@@ -249,13 +263,17 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     float distance = FLT_MAX;
     float cur_dist;
     std::shared_ptr<Building> collisionBuilding = nullptr;
-    for (auto iter = _buildings.begin(); iter != _buildings.end(); iter++) {
-        if ((*iter)->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
+    OctreeNodeIterator octiter = OctreeNodeIterator(_buildings);
+
+    while (Building *building = static_cast<Building*>(octiter.next())) {
+        if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
             if (cur_dist < distance) {
                 distance = cur_dist;
                 block_coords = tmp_block_coords;
                 adjacent_block_coords = tmp_adjacent_block_coords;
-                collisionBuilding = *iter;
+                collisionBuilding = std::shared_ptr<Building>(building);
+                new std::shared_ptr<Building>(collisionBuilding); // FIXME
+                
             }
         }
     }

@@ -11,10 +11,8 @@ using namespace scene;
 using namespace video;
 
 
-Building::Building(irr::scene::ISceneManager *smgr) : Entity(smgr) {
-        _chunks.push_back(std::shared_ptr<Chunk>(new Chunk(smgr, this)));
+Building::Building(irr::scene::ISceneManager *smgr) : Entity(smgr), _chunks(irr::core::vector3df(-512, -512, -512), irr::core::vector3df(512, 512, 512)) {
 }
-
 
 void Building::process(float delta) {
 }
@@ -26,8 +24,12 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
         ISceneNode *collisionNode = nullptr;
         ISceneCollisionManager *collMan = _smgr->getSceneCollisionManager();
         distance = FLT_MAX;
-        for (auto iter = _chunks.begin(); iter != _chunks.end(); iter++) {
-                ITriangleSelector *selector = (*iter)->getSelector();
+
+        OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
+
+        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+
+                ITriangleSelector *selector = chunk->getSelector();
                 vector3df tmpCollisionPoint;
                 triangle3df tmpCollisionTriangle;
                 ISceneNode *tmpCollisionNode = nullptr;

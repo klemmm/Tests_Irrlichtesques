@@ -5,6 +5,7 @@
 #include <irrlicht/irrlicht.h>
 #include "kbd_status.h"
 #include "building.h"
+#include "octree.h"
 #include "hud.h"
 
 class World {
@@ -26,7 +27,7 @@ private:
     irr::core::quaternion _camera_orientation;
     irr::core::vector3df _camera_position;
 
-    std::vector<std::shared_ptr<Building> > _buildings;
+    Octree _buildings;
 
     bool _wasLeftPressed;
     bool _wasRightPressed;

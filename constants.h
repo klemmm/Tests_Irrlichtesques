@@ -8,5 +8,9 @@ class Constants {
 
 
     static const int BLOCK_SIZE = 50;
+
+    static const int CHUNK_SIZE = 8;
+
+    static const int WORLD_SIZE = 1048576;
 };
 #endif

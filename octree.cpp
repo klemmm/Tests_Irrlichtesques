@@ -39,12 +39,12 @@ void Octree::insert(OctreeNode &node) {
 }
 
 
-OctreeBoundedIterator::OctreeBoundedIterator(const Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _octree(octree), _corner1(corner1), _corner2(corner2) {
-    _stack.push(std::make_pair<const Octree*, int>(&_octree, 0));
+OctreeBoundedIterator::OctreeBoundedIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _octree(octree), _corner1(corner1), _corner2(corner2), _me(true) {
+    _stack.push(std::make_pair<Octree*, int>(&_octree, 0));
 } 
 
 Octree *OctreeBoundedIterator::next(void) {
-    const Octree *current; 
+    Octree *current; 
     int index;
 
     do {
@@ -57,20 +57,25 @@ Octree *OctreeBoundedIterator::next(void) {
 
     if (index == 8) return nullptr;
 
-    _stack.push(std::make_pair<const Octree*, int>(std::move(current), index + 1));
+    _stack.push(std::make_pair<Octree*, int>(std::move(current), index + 1));
     if (current->_octants[index] != nullptr) {        
-        _stack.push(std::make_pair<const Octree*, int>(std::move((const Octree*)current->_octants[index]), 0));
+        _stack.push(std::make_pair<Octree*, int>(std::move((Octree*)current->_octants[index]), 0));
     }
     return current->_octants[index];
 }
 
-OctreeIterator::OctreeIterator(const Octree &octree) : _octree(octree) {
-    _stack.push(std::make_pair<const Octree*, int>(&_octree, 0));
+OctreeIterator::OctreeIterator(Octree &octree) : _octree(octree), _me(true) {
+    _stack.push(std::make_pair<Octree*, int>(&_octree, 0));
 } 
 
 Octree *OctreeIterator::next(void) {
-    const Octree *current; 
+    Octree *current; 
     int index;
+
+    if (_me) {
+        _me = false;
+        return &_octree;
+    }
 
     do {
         current = _stack.top().first;
@@ -82,9 +87,9 @@ Octree *OctreeIterator::next(void) {
 
     if (index == 8) return nullptr;
 
-    _stack.push(std::make_pair<const Octree*, int>(std::move(current), index + 1));
+    _stack.push(std::make_pair<Octree*, int>(std::move(current), index + 1));
     if (current->_octants[index] != nullptr) {        
-        _stack.push(std::make_pair<const Octree*, int>(std::move((const Octree*)current->_octants[index]), 0));
+        _stack.push(std::make_pair<Octree*, int>(std::move((Octree*)current->_octants[index]), 0));
     }
     return current->_octants[index];
 }

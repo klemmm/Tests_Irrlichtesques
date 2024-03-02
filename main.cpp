@@ -67,6 +67,7 @@ int main(void) {
     IrrlichtDevice *device = createDevice( video::EDT_OPENGL, dimension2d<u32>(Constants::WIDTH, Constants::HEIGHT), 32, false, true, true, &kbdstatus);
 
     device->setWindowCaption(L"Tests Irrlichtesques");
+    device->getLogger()->setLogLevel(ELL_ERROR);
 
     IVideoDriver* driver = device->getVideoDriver();
     ISceneManager* smgr = device->getSceneManager();

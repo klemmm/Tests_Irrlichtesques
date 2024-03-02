@@ -1,5 +1,5 @@
 #ifndef OCTREE_H
-#define OCTREE_H_1
+#define OCTREE_H 1
 
 #include <vector>
 #include <stack>
@@ -82,11 +82,12 @@ private:
 
 class OctreeIterator {
 private:
-    const Octree &_octree;
-    std::stack<std::pair<const Octree*, int> > _stack;
+    Octree &_octree;
+    std::stack<std::pair<Octree*, int> > _stack;
+    bool _me;
 
 public:
-    OctreeIterator(const Octree &octree);
+    OctreeIterator(Octree &octree);
     Octree *next();
     inline bool hasNext(void) {
         return !_stack.empty();
@@ -95,17 +96,18 @@ public:
 
 class OctreeBoundedIterator {
 private:
-    const Octree &_octree;
-    std::stack<std::pair<const Octree*, int> > _stack;
+    Octree &_octree;
+    std::stack<std::pair<Octree*, int> > _stack;
     const irr::core::vector3df &_corner1, &_corner2;
+    bool _me;
 
 public:
-    OctreeBoundedIterator(const Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2);
+    OctreeBoundedIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2);
     Octree *next();
     inline bool hasNext(void) {
         return !_stack.empty();
     }
-    inline bool isDisjoint(const Octree *octree) {
+    inline bool isDisjoint(Octree *octree) {
         return (!octree) || (octree->_corner2.X < _corner1.X) ||
             (octree->_corner1.X > _corner2.X) ||
             (octree->_corner2.Y < _corner1.Y) ||
@@ -123,7 +125,7 @@ class OctreeNodeIterator {
     std::vector<OctreeNode*>::const_iterator _node_iter;
     bool _empty;
 public:
-    OctreeNodeIterator(const Octree &octree) : _iter(OctreeIterator(octree)), _current(_iter.next())  {
+    OctreeNodeIterator(Octree &octree) : _iter(OctreeIterator(octree)), _current(_iter.next())  {
         if (_current) {
             _empty = false;
             _node_iter = _current->begin();
@@ -153,7 +155,7 @@ class OctreeBoundedNodeIterator {
     std::vector<OctreeNode*>::const_iterator _node_iter;
     bool _empty;
 public:
-    OctreeBoundedNodeIterator(const Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
+    OctreeBoundedNodeIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
         if (_current) {
             _empty = false;
             _node_iter = _current->begin();

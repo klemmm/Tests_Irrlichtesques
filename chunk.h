@@ -117,11 +117,21 @@ private:
     static std::map<irr::s32, Chunk*> _map;
 
 public:
-    Chunk(irr::scene::ISceneManager *smgr, Building*);
+    Chunk(irr::scene::ISceneManager *smgr, Building*, const irr::core::vector3di &);
     inline virtual ~Chunk(void) {
         _map.erase(_chunk_id);
     }
     virtual void process(float);
+    irr::core::vector3di getRelCoords(void) { return _rel_coords; }
+
+    bool belongsHere(const irr::core::vector3di &where) {
+        return ((where.X >= _rel_coords.X) &&
+            (where.Y >= _rel_coords.Y) &&
+            (where.Z >= _rel_coords.Z) &&
+            (where.X < _rel_coords.X + Constants::CHUNK_SIZE) &&
+            (where.Y < _rel_coords.Y + Constants::CHUNK_SIZE) &&
+            (where.Z < _rel_coords.Z + Constants::CHUNK_SIZE));
+    }
     inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
 
         Block *b = new Block();
@@ -163,7 +173,7 @@ public:
         return _selector;
     }
 
-    bool bonk(std::shared_ptr<Chunk> other);
+    bool bonk(Chunk* other);
 
     static Chunk* getChunkFromId(irr::s32 id);
 

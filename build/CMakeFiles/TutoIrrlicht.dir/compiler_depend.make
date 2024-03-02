@@ -710,17 +710,19 @@ CMakeFiles/TutoIrrlicht.dir/building.cpp.o: ../building.cpp \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
   ../transforms.h \
   ../entity.h \
-  ../assets.h \
-  ../constants.h \
-  ../chunk.h \
   ../octree.h \
   /usr/include/c++/11/stack \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
-  /usr/include/c++/11/bits/stl_stack.h
+  /usr/include/c++/11/bits/stl_stack.h \
+  ../assets.h \
+  ../constants.h \
+  ../chunk.h
 
 CMakeFiles/TutoIrrlicht.dir/chunk.cpp.o: ../chunk.cpp \
   /usr/include/stdc-predef.h \
@@ -1121,17 +1123,19 @@ CMakeFiles/TutoIrrlicht.dir/chunk.cpp.o: ../chunk.cpp \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
   ../transforms.h \
   ../entity.h \
-  ../assets.h \
-  ../constants.h \
-  ../chunk.h \
   ../octree.h \
   /usr/include/c++/11/stack \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
-  /usr/include/c++/11/bits/stl_stack.h
+  /usr/include/c++/11/bits/stl_stack.h \
+  ../assets.h \
+  ../constants.h \
+  ../chunk.h
 
 CMakeFiles/TutoIrrlicht.dir/entity.cpp.o: ../entity.cpp \
   /usr/include/stdc-predef.h \
@@ -1441,7 +1445,30 @@ CMakeFiles/TutoIrrlicht.dir/entity.cpp.o: ../entity.cpp \
   /usr/include/irrlicht/SMeshBufferLightMap.h \
   /usr/include/irrlicht/SMeshBufferTangents.h \
   /usr/include/irrlicht/SSharedMeshBuffer.h \
-  /usr/include/irrlicht/SViewFrustum.h
+  /usr/include/irrlicht/SViewFrustum.h \
+  ../octree.h \
+  /usr/include/c++/11/vector \
+  /usr/include/c++/11/bits/allocator.h \
+  /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h \
+  /usr/include/c++/11/ext/new_allocator.h \
+  /usr/include/c++/11/bits/memoryfwd.h \
+  /usr/include/c++/11/bits/stl_construct.h \
+  /usr/include/c++/11/bits/stl_uninitialized.h \
+  /usr/include/c++/11/ext/alloc_traits.h \
+  /usr/include/c++/11/bits/alloc_traits.h \
+  /usr/include/c++/11/bits/stl_vector.h \
+  /usr/include/c++/11/initializer_list \
+  /usr/include/c++/11/bits/stl_bvector.h \
+  /usr/include/c++/11/bits/functional_hash.h \
+  /usr/include/c++/11/bits/hash_bytes.h \
+  /usr/include/c++/11/bits/range_access.h \
+  /usr/include/c++/11/bits/vector.tcc \
+  /usr/include/c++/11/stack \
+  /usr/include/c++/11/deque \
+  /usr/include/c++/11/bits/stl_deque.h \
+  /usr/include/c++/11/bits/deque.tcc \
+  /usr/include/c++/11/bits/stl_stack.h \
+  /usr/include/c++/11/bits/uses_allocator.h
 
 CMakeFiles/TutoIrrlicht.dir/hud.cpp.o: ../hud.cpp \
   /usr/include/stdc-predef.h \
@@ -2218,16 +2245,18 @@ CMakeFiles/TutoIrrlicht.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
   ../transforms.h \
   ../entity.h \
-  ../constants.h \
-  ../chunk.h \
   ../octree.h \
   /usr/include/c++/11/stack \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
   /usr/include/c++/11/bits/stl_stack.h \
+  ../constants.h \
+  ../chunk.h \
   ../hud.h
 
 CMakeFiles/TutoIrrlicht.dir/octree.cpp.o: ../octree.cpp \
@@ -2962,17 +2991,19 @@ CMakeFiles/TutoIrrlicht.dir/ship.cpp.o: ../ship.cpp \
   /usr/include/c++/11/bits/hashtable_policy.h \
   /usr/include/c++/11/bits/enable_special_members.h \
   /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
   ../transforms.h \
   ../entity.h \
-  ../assets.h \
-  ../constants.h \
-  ../chunk.h \
   ../octree.h \
   /usr/include/c++/11/stack \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
-  /usr/include/c++/11/bits/stl_stack.h
+  /usr/include/c++/11/bits/stl_stack.h \
+  ../assets.h \
+  ../constants.h \
+  ../chunk.h
 
 CMakeFiles/TutoIrrlicht.dir/transforms.cpp.o: ../transforms.cpp \
   /usr/include/stdc-predef.h \
@@ -3689,16 +3720,18 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
   /usr/include/c++/11/bits/std_function.h \
   /usr/include/c++/11/unordered_map \
   /usr/include/c++/11/bits/unordered_map.h \
+  /usr/include/c++/11/cassert \
+  /usr/include/assert.h \
   ../transforms.h \
   ../entity.h \
-  ../constants.h \
-  ../chunk.h \
   ../octree.h \
   /usr/include/c++/11/stack \
   /usr/include/c++/11/deque \
   /usr/include/c++/11/bits/stl_deque.h \
   /usr/include/c++/11/bits/deque.tcc \
   /usr/include/c++/11/bits/stl_stack.h \
+  ../constants.h \
+  ../chunk.h \
   ../hud.h \
   ../ship.h
 
@@ -3776,6 +3809,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 ../octree.h:
 
 ../transforms.h:
+
+/usr/include/assert.h:
 
 /usr/include/c++/11/bits/basic_ios.tcc:
 
@@ -3980,6 +4015,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 /usr/include/c++/11/bits/ostream.tcc:
 
 /usr/include/irrlicht/IParticleAttractionAffector.h:
+
+/usr/include/c++/11/cassert:
 
 /usr/include/irrlicht/IParticleSphereEmitter.h:
 

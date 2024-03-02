@@ -1,6 +1,6 @@
 #include <irrlicht/irrlicht.h>
 
-#include "chunk.h"
+#include "building.h"
 #include "assets.h"
 #include "transforms.h"
 #include "constants.h"
@@ -13,7 +13,7 @@ using namespace video;
 irr::s32 Chunk::_next_id = 0;
 std::map<irr::s32, Chunk*>  Chunk::_map;
 
-Chunk::Chunk(irr::scene::ISceneManager *smgr) : Entity(smgr) {
+Chunk::Chunk(irr::scene::ISceneManager *smgr, Building* building) : Entity(smgr), _building(building), _blocks(irr::core::vector3df(-16, -16, -16), irr::core::vector3df(16, 16, 16)), _nblocks(0) {
         
         _mesh = new SMesh();
         _meshBuffer = new SMeshBuffer();       
@@ -31,11 +31,11 @@ void Chunk::updateMesh(const TextureId &texture_id) {
         if (_node != nullptr)
                 _node->remove();
 
-        _meshBuffer->Vertices.reallocate(24 * blocks.size());
-        _meshBuffer->Vertices.set_used(24 * blocks.size());
+        _meshBuffer->Vertices.reallocate(24 * _nblocks);
+        _meshBuffer->Vertices.set_used(24 * _nblocks);
 
-        _meshBuffer->Indices.reallocate(36 * blocks.size());
-        _meshBuffer->Indices.set_used(36 * blocks.size());
+        _meshBuffer->Indices.reallocate(36 * _nblocks);
+        _meshBuffer->Indices.set_used(36 * _nblocks);
 
         int i = 0;
         
@@ -43,45 +43,45 @@ void Chunk::updateMesh(const TextureId &texture_id) {
         if (_selector != nullptr)
                 _selector->drop();
         
-                
-        for (auto iter = blocks.begin(); iter != blocks.end(); iter++, i++) {
-                SColor color = (_hasHilight && _hilighted == (*iter).where) ? SColor(255,255,255,255) : SColor(255,128,128,128);
+        OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
+        while (Block *block = static_cast<Block*>(octiter.next())) {
+                SColor color = (_hasHilight && _hilighted == block->where) ? SColor(255,255,255,255) : SColor(255,128,128,128);
                 
                 // Up
-                _meshBuffer->Vertices[i * 24 + 0] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + 0, (*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 1] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 2] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 3] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 0] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, block->texture_coords.X*tstep.X + 0, block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 1] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 2] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 3] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,1,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
 
                 // Down
-                _meshBuffer->Vertices[i * 24 + 4] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 5] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 6] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 7] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 4] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 5] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 6] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 7] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,-1,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + tstep.Y);
 
                 // Right
-                _meshBuffer->Vertices[i * 24 + 8] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 9] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 10] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 11] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 8] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 9] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 10] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 11] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 1,0,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
 
                 // Left
-                _meshBuffer->Vertices[i * 24 + 12] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 13] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 14] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 15] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 12] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 13] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 14] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 15] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, -1,0,0, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
 
                 // Back
-                _meshBuffer->Vertices[i * 24 + 16] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 17] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 18] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 19] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 16] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 17] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 18] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 19] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,1, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
                 
                 // Front
-                _meshBuffer->Vertices[i * 24 + 20] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
-                _meshBuffer->Vertices[i * 24 + 21] = video::S3DVertex(-Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, (*iter).texture_coords.X*tstep.X + 0,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 22] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + 0);
-                _meshBuffer->Vertices[i * 24 + 23] = video::S3DVertex(+Constants::BLOCK_SIZE + (*iter).where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ (*iter).where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + (*iter).where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, (*iter).texture_coords.X*tstep.X + tstep.X,(*iter).texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 20] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + tstep.Y);
+                _meshBuffer->Vertices[i * 24 + 21] = video::S3DVertex(-Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, block->texture_coords.X*tstep.X + 0,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 22] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,+Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + 0);
+                _meshBuffer->Vertices[i * 24 + 23] = video::S3DVertex(+Constants::BLOCK_SIZE + block->where.X * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE+ block->where.Y * Constants::BLOCK_SIZE * 2,-Constants::BLOCK_SIZE + block->where.Z * Constants::BLOCK_SIZE * 2, 0,0,-1, color, block->texture_coords.X*tstep.X + tstep.X,block->texture_coords.Y*tstep.Y + tstep.Y);
 
                 for (int side = 0; side < 6; side++) {
                         _meshBuffer->Indices[i * 36 + side * 6 + 0] = i * 24 + side * 4 + 0;
@@ -91,14 +91,16 @@ void Chunk::updateMesh(const TextureId &texture_id) {
                         _meshBuffer->Indices[i * 36 + side * 6 + 4] = i * 24 + side * 4 + 3;
                         _meshBuffer->Indices[i * 36 + side * 6 + 5] = i * 24 + side * 4 + 0;
                 }                                                        
+                i++;
         }
         _mesh->recalculateBoundingBox();
 
-        
         _node = _smgr -> addOctreeSceneNode(_mesh, 0, -1, 1024);
-        _node->setPosition(_position);
+        irr::core::vector3df rel_pos = vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        Transforms::rotate(rel_pos, _building->getOrientation());
+        _node->setPosition(_building->getPosition() + rel_pos);
+        Transforms::orient_node(*_node, _building->getOrientation());
         _node->setID(_chunk_id);
-        Transforms::orient_node(*_node, _rotation);
 
         _node->setMaterialFlag(video::EMF_BACK_FACE_CULLING, true);
         _node->setAutomaticCulling(EAC_FRUSTUM_SPHERE);
@@ -112,9 +114,58 @@ void Chunk::process(float delta) {
 
 }
 
+void Chunk::updatePositionAndOrientation(void) {
+        _node->setPosition(_building->getPosition() + irr::core::vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2);
+        Transforms::orient_node(*_node, _building->getOrientation());
+}
 
 Chunk* Chunk::getChunkFromId(irr::s32 id) {
         if (Chunk::_map.find(id) != Chunk::_map.end()) {
                 return Chunk::_map[id];
         } else return nullptr;
+}
+
+
+bool Chunk::bonk(std::shared_ptr<Chunk> other) {
+        OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
+        
+
+        irr::core::vector3df rel_pos = vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        Transforms::rotate(rel_pos, _building->getOrientation());
+        irr::core::vector3df abs_pos = _building->getPosition() + rel_pos;
+
+        irr::core::vector3df rel_pos2 = vector3df(other->_rel_coords.X, other->_rel_coords.Y, other->_rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        Transforms::rotate(rel_pos2, other->_building->getOrientation());
+        irr::core::vector3df abs_pos2 = other->_building->getPosition() + rel_pos2;
+
+        int i, j;
+        i = 0;
+        while (Block *block = static_cast<Block*>(octiter.next())) {
+
+                irr::core::vector3df rel = irr::core::vector3df(block->where.X, block->where.Y, block->where.Z)*Constants::BLOCK_SIZE*2;
+                Transforms::rotate(rel, _building->getOrientation());
+                irr::core::vector3df center = _building->getPosition() + rel;
+
+                irr::core::vector3df rel2 = center - other->_building->getPosition();
+                irr::core::quaternion rot2 = other->_building->getOrientation();
+                rot2.makeInverse();
+                Transforms::rotate(rel2, rot2);
+                rel2 /= (Constants::BLOCK_SIZE*2);
+                
+
+
+                //printf("bonking %d pos %f,%f,%f rel2 %f %f %f\n", i, center.X, center.Y, center.Z, rel2.X, rel2.Y, rel2.Z);
+                irr::core::vector3df radius = irr::core::vector3df(1.5f, 1.5f, 1.5f);
+                irr::core::vector3df corner1 = irr::core::vector3df(rel2 - radius);
+                irr::core::vector3df corner2 = irr::core::vector3df(rel2 + radius);
+                OctreeBoundedNodeIterator octiter2 = OctreeBoundedNodeIterator(other->_blocks, corner1, corner2);  
+                j = 0;      
+                while (Block *block2 = static_cast<Block*>(octiter2.next())) {
+
+                        if (block->bonk(abs_pos, abs_pos2, _building->getOrientation(), other->_building->getOrientation(), block2)) return true;
+                        j++;
+                }
+                i++;
+        }
+        return false;
 }

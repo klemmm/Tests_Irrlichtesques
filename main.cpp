@@ -8,6 +8,7 @@
 #include "world.h"
 #include "constants.h"
 #include "kbd_status.h"
+#include "hud.h"
 
 using namespace irr;
 
@@ -72,14 +73,18 @@ int main(void) {
     IGUIEnvironment* guienv = device->getGUIEnvironment();
 
     TextureLoader::load(driver);
+    FontLoader::load(guienv);
 
     ICursorControl *cc = device->getCursorControl();
     cc->setVisible(false);
 
     World world(smgr);
 
+    Hud hud(guienv);
+
     u32 then = device->getTimer()->getTime();
     cc->setPosition(0.5f, 0.5f);
+                         
     while(device->run()) {
         const u32 now = device->getTimer()->getTime();
         const f32 delta = (f32)(now - then) / 1000.f;
@@ -88,17 +93,19 @@ int main(void) {
         if (kbdstatus.isKeyDown(irr::KEY_ESCAPE))
             break;
 
+        cc->setVisible(world.isInvOpen());
         vector2df mouse_movement = cc->getRelativePosition();
-        cc->setPosition(0.5f, 0.5f);            
+      
         
-        world.process(delta, kbdstatus, mouse_movement);
+        world.process(delta, hud, kbdstatus, mouse_movement);
+        if (!world.isInvOpen())
+            cc->setPosition(0.5f, 0.5f);              
+        hud.process(delta);
 
         driver->beginScene();
         smgr->drawAll();
         guienv->drawAll();
-        driver->draw2DRectangle(video::SColor(255,255,255,255), core::rect<s32>(Constants::WIDTH/2 - 5, Constants::HEIGHT/2 - 1, Constants::WIDTH/2 + 5, Constants::HEIGHT/2 + 1));
-        driver->draw2DRectangle(video::SColor(255,255,255,255), core::rect<s32>(Constants::WIDTH/2 - 1, Constants::HEIGHT/2 - 5, Constants::WIDTH/2 + 1, Constants::HEIGHT/2 + 5));
-
+        hud.draw(driver);
         driver->endScene();
     }
     device->drop();

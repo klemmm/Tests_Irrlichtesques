@@ -1,0 +1,388 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 47.14      1.40     1.40 498000179     0.00     0.00  OctreeIterator::next()
+ 32.66      2.37     0.97 990000355     0.00     0.00  irr::gui::IGUIElement::setText(wchar_t const*)
+ 10.44      2.68     0.31 93000906     0.00     0.00  Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&)
+  8.42      2.93     0.25  1500000     0.00     0.00  Chunk::bonk(std::shared_ptr<Chunk>)
+  0.67      2.95     0.02  6000003     0.00     0.00  OctreeIterator::OctreeIterator(Octree const&)
+  0.67      2.97     0.02      150     0.13    19.80  World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&)
+  0.00      2.97     0.00     1950     0.00     0.00  non-virtual thunk to KbdStatusReceiver::isKeyDown(irr::EKEY_CODE) const
+  0.00      2.97     0.00      300     0.00     0.00  Building::getCollisionCoords(irr::core::line3d<float> const&, float&, irr::core::vector3d<int>&, irr::core::vector3d<int>&)
+  0.00      2.97     0.00      300     0.00     0.00  non-virtual thunk to KbdStatusReceiver::isLeftPressed() const
+  0.00      2.97     0.00      300     0.00     0.00  non-virtual thunk to KbdStatusReceiver::isRightPressed() const
+  0.00      2.97     0.00      153     0.00     0.00  Transforms::orient_node(irr::scene::ISceneNode&, irr::core::quaternion const&)
+  0.00      2.97     0.00      153     0.00     0.00  TextureLoader::get(TextureId)
+  0.00      2.97     0.00      151     0.00     0.00  Building::process(float)
+  0.00      2.97     0.00      150     0.00     0.00  Hud::draw(irr::video::IVideoDriver*)
+  0.00      2.97     0.00      150     0.00     0.00  Hud::process(float)
+  0.00      2.97     0.00      150     0.00     0.00  Ship::process(float)
+  0.00      2.97     0.00      150     0.00     0.00  Chunk::updatePositionAndOrientation()
+  0.00      2.97     0.00      150     0.00     0.00  World::position_and_orient_camera(irr::core::vector3d<float> const&, irr::core::quaternion const&)
+  0.00      2.97     0.00       47     0.00     0.00  void std::vector<OctreeNode*, std::allocator<OctreeNode*> >::_M_realloc_insert<OctreeNode*>(__gnu_cxx::__normal_iterator<OctreeNode**, std::vector<OctreeNode*, std::allocator<OctreeNode*> > >, OctreeNode*&&)
+  0.00      2.97     0.00       18     0.00     0.00  Hud::setStatus(char const*)
+  0.00      2.97     0.00       13     0.00     0.00  Octree::insert(OctreeNode&)
+  0.00      2.97     0.00        3     0.00     0.00  Chunk::updateMesh(TextureId const&)
+  0.00      2.97     0.00        3     0.00     0.00  irr::scene::CMeshBuffer<irr::video::S3DVertex>::getBoundingBox() const
+  0.00      2.97     0.00        2     0.00     0.00  Chunk::process(float)
+  0.00      2.97     0.00        2     0.00     0.00  Chunk::Chunk(irr::scene::ISceneManager*, Building*)
+  0.00      2.97     0.00        2     0.00     0.00  World::World(irr::scene::ISceneManager*)
+  0.00      2.97     0.00        2     0.00     0.00  Building::Building(irr::scene::ISceneManager*)
+  0.00      2.97     0.00        2     0.00     0.00  std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+  0.00      2.97     0.00        2     0.00     0.00  std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+  0.00      2.97     0.00        2     0.00     0.00  void std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > >::_M_realloc_insert<std::shared_ptr<Chunk> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Chunk>*, std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > > >, std::shared_ptr<Chunk>&&)
+  0.00      2.97     0.00        1     0.00     0.00  FontLoader::load(irr::gui::IGUIEnvironment*)
+  0.00      2.97     0.00        1     0.00     0.00  TextureLoader::load(irr::video::IVideoDriver*)
+  0.00      2.97     0.00        1     0.00     0.00  Hud::Hud(irr::gui::IGUIEnvironment*)
+  0.00      2.97     0.00        1     0.00     0.00  World::~World()
+  0.00      2.97     0.00        1     0.00     0.00  std::_Hashtable<std::shared_ptr<Building>, std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> >, std::__detail::_Identity, std::equal_to<std::shared_ptr<Building> >, std::hash<std::shared_ptr<Building> >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, true, true> >::_M_rehash(unsigned long, unsigned long const&)
+  0.00      2.97     0.00        1     0.00     0.00  std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+  0.00      2.97     0.00        1     0.00     0.00  std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+  0.00      2.97     0.00        1     0.00     0.00  std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+  0.00      2.97     0.00        1     0.00     0.00  std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+  0.00      2.97     0.00        1     0.00     0.00  void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> const&>(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building> const&)
+  0.00      2.97     0.00        1     0.00     0.00  void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building>&&)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.34% of 2.97 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]    100.0    0.00    2.97                 main [1]
+                0.02    2.95     150/150         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+                0.00    0.00       1/2           World::World(irr::scene::ISceneManager*) [11]
+                0.00    0.00     150/150         Hud::process(float) [25]
+                0.00    0.00     150/150         Hud::draw(irr::video::IVideoDriver*) [24]
+                0.00    0.00       1/1           FontLoader::load(irr::gui::IGUIEnvironment*) [38]
+                0.00    0.00       1/1           TextureLoader::load(irr::video::IVideoDriver*) [39]
+                0.00    0.00       1/1           Hud::Hud(irr::gui::IGUIEnvironment*) [40]
+                0.00    0.00       1/1           World::~World() [41]
+-----------------------------------------------
+                0.02    2.95     150/150         main [1]
+[2]    100.0    0.02    2.95     150         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+                0.25    2.70 1500000/1500000     Chunk::bonk(std::shared_ptr<Chunk>) [3]
+                0.00    0.00     300/300         Building::getCollisionCoords(irr::core::line3d<float> const&, float&, irr::core::vector3d<int>&, irr::core::vector3d<int>&) [8]
+                0.00    0.00     150/150         World::position_and_orient_camera(irr::core::vector3d<float> const&, irr::core::quaternion const&) [9]
+                0.00    0.00     150/93000906     Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+                0.00    0.00       1/2           World::World(irr::scene::ISceneManager*) [11]
+                0.00    0.00       1/3           Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00    1950/1950        non-virtual thunk to KbdStatusReceiver::isKeyDown(irr::EKEY_CODE) const [18]
+                0.00    0.00     300/300         non-virtual thunk to KbdStatusReceiver::isLeftPressed() const [19]
+                0.00    0.00     300/300         non-virtual thunk to KbdStatusReceiver::isRightPressed() const [20]
+                0.00    0.00     150/151         Building::process(float) [23]
+                0.00    0.00     150/150         Chunk::updatePositionAndOrientation() [27]
+                0.00    0.00     150/150         Ship::process(float) [26]
+                0.00    0.00      18/18          Hud::setStatus(char const*) [29]
+-----------------------------------------------
+                0.25    2.70 1500000/1500000     World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[3]     99.3    0.25    2.70 1500000         Chunk::bonk(std::shared_ptr<Chunk>) [3]
+                1.40    0.96 498000000/498000179     OctreeIterator::next() [4]
+                0.31    0.00 93000000/93000906     Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+                0.02    0.01 6000000/6000003     OctreeIterator::OctreeIterator(Octree const&) [7]
+-----------------------------------------------
+                0.00    0.00     179/498000179     Chunk::updateMesh(TextureId const&) [10]
+                1.40    0.96 498000000/498000179     Chunk::bonk(std::shared_ptr<Chunk>) [3]
+[4]     79.6    1.40    0.96 498000179         OctreeIterator::next() [4]
+                0.96    0.00 984000352/990000355     irr::gui::IGUIElement::setText(wchar_t const*) [5]
+-----------------------------------------------
+                0.01    0.00 6000003/990000355     OctreeIterator::OctreeIterator(Octree const&) [7]
+                0.96    0.00 984000352/990000355     OctreeIterator::next() [4]
+[5]     32.7    0.97    0.00 990000355         irr::gui::IGUIElement::setText(wchar_t const*) [5]
+-----------------------------------------------
+                0.00    0.00       3/93000906     Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00     150/93000906     World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+                0.00    0.00     300/93000906     World::position_and_orient_camera(irr::core::vector3d<float> const&, irr::core::quaternion const&) [9]
+                0.00    0.00     453/93000906     Building::getCollisionCoords(irr::core::line3d<float> const&, float&, irr::core::vector3d<int>&, irr::core::vector3d<int>&) [8]
+                0.31    0.00 93000000/93000906     Chunk::bonk(std::shared_ptr<Chunk>) [3]
+[6]     10.4    0.31    0.00 93000906         Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+-----------------------------------------------
+                0.00    0.00       3/6000003     Chunk::updateMesh(TextureId const&) [10]
+                0.02    0.01 6000000/6000003     Chunk::bonk(std::shared_ptr<Chunk>) [3]
+[7]      0.9    0.02    0.01 6000003         OctreeIterator::OctreeIterator(Octree const&) [7]
+                0.01    0.00 6000003/990000355     irr::gui::IGUIElement::setText(wchar_t const*) [5]
+-----------------------------------------------
+                0.00    0.00     300/300         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[8]      0.0    0.00    0.00     300         Building::getCollisionCoords(irr::core::line3d<float> const&, float&, irr::core::vector3d<int>&, irr::core::vector3d<int>&) [8]
+                0.00    0.00     453/93000906     Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+-----------------------------------------------
+                0.00    0.00     150/150         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[9]      0.0    0.00    0.00     150         World::position_and_orient_camera(irr::core::vector3d<float> const&, irr::core::quaternion const&) [9]
+                0.00    0.00     300/93000906     Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+-----------------------------------------------
+                0.00    0.00       1/3           World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+                0.00    0.00       2/3           World::World(irr::scene::ISceneManager*) [11]
+[10]     0.0    0.00    0.00       3         Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00     179/498000179     OctreeIterator::next() [4]
+                0.00    0.00       3/6000003     OctreeIterator::OctreeIterator(Octree const&) [7]
+                0.00    0.00       3/93000906     Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [6]
+                0.00    0.00       3/3           irr::scene::CMeshBuffer<irr::video::S3DVertex>::getBoundingBox() const [31]
+                0.00    0.00       3/153         Transforms::orient_node(irr::scene::ISceneNode&, irr::core::quaternion const&) [21]
+                0.00    0.00       3/153         TextureLoader::get(TextureId) [22]
+-----------------------------------------------
+                0.00    0.00       1/2           main [1]
+                0.00    0.00       1/2           World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[11]     0.0    0.00    0.00       2         World::World(irr::scene::ISceneManager*) [11]
+                0.00    0.00       2/3           Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00      13/13          Octree::insert(OctreeNode&) [30]
+                0.00    0.00       2/2           Building::Building(irr::scene::ISceneManager*) [34]
+                0.00    0.00       1/1           void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> const&>(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building> const&) [47]
+                0.00    0.00       1/1           void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building>&&) [48]
+                0.00    0.00       1/1           std::_Hashtable<std::shared_ptr<Building>, std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> >, std::__detail::_Identity, std::equal_to<std::shared_ptr<Building> >, std::hash<std::shared_ptr<Building> >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, true, true> >::_M_rehash(unsigned long, unsigned long const&) [42]
+-----------------------------------------------
+                0.00    0.00    1950/1950        World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[18]     0.0    0.00    0.00    1950         non-virtual thunk to KbdStatusReceiver::isKeyDown(irr::EKEY_CODE) const [18]
+-----------------------------------------------
+                0.00    0.00     300/300         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[19]     0.0    0.00    0.00     300         non-virtual thunk to KbdStatusReceiver::isLeftPressed() const [19]
+-----------------------------------------------
+                0.00    0.00     300/300         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[20]     0.0    0.00    0.00     300         non-virtual thunk to KbdStatusReceiver::isRightPressed() const [20]
+-----------------------------------------------
+                0.00    0.00       3/153         Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00     150/153         Chunk::updatePositionAndOrientation() [27]
+[21]     0.0    0.00    0.00     153         Transforms::orient_node(irr::scene::ISceneNode&, irr::core::quaternion const&) [21]
+-----------------------------------------------
+                0.00    0.00       3/153         Chunk::updateMesh(TextureId const&) [10]
+                0.00    0.00     150/153         Hud::draw(irr::video::IVideoDriver*) [24]
+[22]     0.0    0.00    0.00     153         TextureLoader::get(TextureId) [22]
+-----------------------------------------------
+                0.00    0.00       1/151         std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [36]
+                0.00    0.00     150/151         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[23]     0.0    0.00    0.00     151         Building::process(float) [23]
+-----------------------------------------------
+                0.00    0.00     150/150         main [1]
+[24]     0.0    0.00    0.00     150         Hud::draw(irr::video::IVideoDriver*) [24]
+                0.00    0.00     150/153         TextureLoader::get(TextureId) [22]
+-----------------------------------------------
+                0.00    0.00     150/150         main [1]
+[25]     0.0    0.00    0.00     150         Hud::process(float) [25]
+-----------------------------------------------
+                0.00    0.00     150/150         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[26]     0.0    0.00    0.00     150         Ship::process(float) [26]
+-----------------------------------------------
+                0.00    0.00     150/150         World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[27]     0.0    0.00    0.00     150         Chunk::updatePositionAndOrientation() [27]
+                0.00    0.00     150/153         Transforms::orient_node(irr::scene::ISceneNode&, irr::core::quaternion const&) [21]
+-----------------------------------------------
+                0.00    0.00      47/47          Octree::insert(OctreeNode&) [30]
+[28]     0.0    0.00    0.00      47         void std::vector<OctreeNode*, std::allocator<OctreeNode*> >::_M_realloc_insert<OctreeNode*>(__gnu_cxx::__normal_iterator<OctreeNode**, std::vector<OctreeNode*, std::allocator<OctreeNode*> > >, OctreeNode*&&) [28]
+-----------------------------------------------
+                0.00    0.00      18/18          World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [2]
+[29]     0.0    0.00    0.00      18         Hud::setStatus(char const*) [29]
+-----------------------------------------------
+                                  64             Octree::insert(OctreeNode&) [30]
+                0.00    0.00      13/13          World::World(irr::scene::ISceneManager*) [11]
+[30]     0.0    0.00    0.00      13+64      Octree::insert(OctreeNode&) [30]
+                0.00    0.00      47/47          void std::vector<OctreeNode*, std::allocator<OctreeNode*> >::_M_realloc_insert<OctreeNode*>(__gnu_cxx::__normal_iterator<OctreeNode**, std::vector<OctreeNode*, std::allocator<OctreeNode*> > >, OctreeNode*&&) [28]
+                                  64             Octree::insert(OctreeNode&) [30]
+-----------------------------------------------
+                0.00    0.00       3/3           Chunk::updateMesh(TextureId const&) [10]
+[31]     0.0    0.00    0.00       3         irr::scene::CMeshBuffer<irr::video::S3DVertex>::getBoundingBox() const [31]
+-----------------------------------------------
+                0.00    0.00       2/2           Chunk::Chunk(irr::scene::ISceneManager*, Building*) [33]
+[32]     0.0    0.00    0.00       2         Chunk::process(float) [32]
+-----------------------------------------------
+                0.00    0.00       2/2           Building::Building(irr::scene::ISceneManager*) [34]
+[33]     0.0    0.00    0.00       2         Chunk::Chunk(irr::scene::ISceneManager*, Building*) [33]
+                0.00    0.00       2/2           Chunk::process(float) [32]
+-----------------------------------------------
+                0.00    0.00       2/2           World::World(irr::scene::ISceneManager*) [11]
+[34]     0.0    0.00    0.00       2         Building::Building(irr::scene::ISceneManager*) [34]
+                0.00    0.00       2/2           Chunk::Chunk(irr::scene::ISceneManager*, Building*) [33]
+                0.00    0.00       2/2           void std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > >::_M_realloc_insert<std::shared_ptr<Chunk> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Chunk>*, std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > > >, std::shared_ptr<Chunk>&&) [37]
+-----------------------------------------------
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [44]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [46]
+[35]     0.0    0.00    0.00       2         std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [35]
+-----------------------------------------------
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [44]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [46]
+[36]     0.0    0.00    0.00       2         std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [36]
+                0.00    0.00       1/151         Building::process(float) [23]
+-----------------------------------------------
+                0.00    0.00       2/2           Building::Building(irr::scene::ISceneManager*) [34]
+[37]     0.0    0.00    0.00       2         void std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > >::_M_realloc_insert<std::shared_ptr<Chunk> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Chunk>*, std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > > >, std::shared_ptr<Chunk>&&) [37]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[38]     0.0    0.00    0.00       1         FontLoader::load(irr::gui::IGUIEnvironment*) [38]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[39]     0.0    0.00    0.00       1         TextureLoader::load(irr::video::IVideoDriver*) [39]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[40]     0.0    0.00    0.00       1         Hud::Hud(irr::gui::IGUIEnvironment*) [40]
+-----------------------------------------------
+                0.00    0.00       1/1           main [1]
+[41]     0.0    0.00    0.00       1         World::~World() [41]
+                0.00    0.00       1/1           std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [46]
+                0.00    0.00       1/1           std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [44]
+                0.00    0.00       1/1           std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [45]
+                0.00    0.00       1/1           std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [43]
+-----------------------------------------------
+                0.00    0.00       1/1           World::World(irr::scene::ISceneManager*) [11]
+[42]     0.0    0.00    0.00       1         std::_Hashtable<std::shared_ptr<Building>, std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> >, std::__detail::_Identity, std::equal_to<std::shared_ptr<Building> >, std::hash<std::shared_ptr<Building> >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, true, true> >::_M_rehash(unsigned long, unsigned long const&) [42]
+-----------------------------------------------
+                0.00    0.00       1/1           World::~World() [41]
+[43]     0.0    0.00    0.00       1         std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [43]
+-----------------------------------------------
+                0.00    0.00       1/1           World::~World() [41]
+[44]     0.0    0.00    0.00       1         std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [44]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [36]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [35]
+-----------------------------------------------
+                0.00    0.00       1/1           World::~World() [41]
+[45]     0.0    0.00    0.00       1         std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [45]
+-----------------------------------------------
+                0.00    0.00       1/1           World::~World() [41]
+[46]     0.0    0.00    0.00       1         std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [46]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose() [36]
+                0.00    0.00       1/2           std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_destroy() [35]
+-----------------------------------------------
+                0.00    0.00       1/1           World::World(irr::scene::ISceneManager*) [11]
+[47]     0.0    0.00    0.00       1         void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> const&>(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building> const&) [47]
+-----------------------------------------------
+                0.00    0.00       1/1           World::World(irr::scene::ISceneManager*) [11]
+[48]     0.0    0.00    0.00       1         void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building>&&) [48]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2022 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [38] FontLoader::load(irr::gui::IGUIEnvironment*) [27] Chunk::updatePositionAndOrientation() [43] std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+  [21] Transforms::orient_node(irr::scene::ISceneNode&, irr::core::quaternion const&) [3] Chunk::bonk(std::shared_ptr<Chunk>) [44] std::_Sp_counted_ptr<Ship*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+   [6] Transforms::rotate(irr::core::vector3d<float>&, irr::core::quaternion const&) [32] Chunk::process(float) [35] std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+  [22] TextureLoader::get(TextureId) [33] Chunk::Chunk(irr::scene::ISceneManager*, Building*) [36] std::_Sp_counted_ptr<Chunk*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+  [39] TextureLoader::load(irr::video::IVideoDriver*) [9] World::position_and_orient_camera(irr::core::vector3d<float> const&, irr::core::quaternion const&) [45] std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_destroy()
+   [4] OctreeIterator::next()  [2] World::process(float, Hud&, IKkbdStatus&, irr::core::vector2d<float> const&) [46] std::_Sp_counted_ptr<Building*, (__gnu_cxx::_Lock_policy)2>::_M_dispose()
+   [7] OctreeIterator::OctreeIterator(Octree const&) [11] World::World(irr::scene::ISceneManager*) [28] void std::vector<OctreeNode*, std::allocator<OctreeNode*> >::_M_realloc_insert<OctreeNode*>(__gnu_cxx::__normal_iterator<OctreeNode**, std::vector<OctreeNode*, std::allocator<OctreeNode*> > >, OctreeNode*&&)
+  [24] Hud::draw(irr::video::IVideoDriver*) [41] World::~World() [37] void std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > >::_M_realloc_insert<std::shared_ptr<Chunk> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Chunk>*, std::vector<std::shared_ptr<Chunk>, std::allocator<std::shared_ptr<Chunk> > > >, std::shared_ptr<Chunk>&&)
+  [25] Hud::process(float)    [30] Octree::insert(OctreeNode&) [47] void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> const&>(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building> const&)
+  [29] Hud::setStatus(char const*) [8] Building::getCollisionCoords(irr::core::line3d<float> const&, float&, irr::core::vector3d<int>&, irr::core::vector3d<int>&) [48] void std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > >::_M_realloc_insert<std::shared_ptr<Building> >(__gnu_cxx::__normal_iterator<std::shared_ptr<Building>*, std::vector<std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> > > >, std::shared_ptr<Building>&&)
+  [40] Hud::Hud(irr::gui::IGUIEnvironment*) [23] Building::process(float) [19] non-virtual thunk to KbdStatusReceiver::isLeftPressed() const
+   [5] irr::gui::IGUIElement::setText(wchar_t const*) [34] Building::Building(irr::scene::ISceneManager*) [20] non-virtual thunk to KbdStatusReceiver::isRightPressed() const
+  [26] Ship::process(float)   [31] irr::scene::CMeshBuffer<irr::video::S3DVertex>::getBoundingBox() const [18] non-virtual thunk to KbdStatusReceiver::isKeyDown(irr::EKEY_CODE) const
+  [10] Chunk::updateMesh(TextureId const&) [42] std::_Hashtable<std::shared_ptr<Building>, std::shared_ptr<Building>, std::allocator<std::shared_ptr<Building> >, std::__detail::_Identity, std::equal_to<std::shared_ptr<Building> >, std::hash<std::shared_ptr<Building> >, std::__detail::_Mod_range_hashing, std::__detail::_Default_ranged_hash, std::__detail::_Prime_rehash_policy, std::__detail::_Hashtable_traits<false, true, true> >::_M_rehash(unsigned long, unsigned long const&)

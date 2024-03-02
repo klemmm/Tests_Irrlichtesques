@@ -258,12 +258,15 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
     core::line3d<f32> ray;
     ray.start = _camera->getPosition();
-    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 10000.0f;
+    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 500.0f;
 
     float distance = FLT_MAX;
     float cur_dist;
     std::shared_ptr<Building> collisionBuilding = nullptr;
-    OctreeNodeIterator octiter = OctreeNodeIterator(_buildings);
+    irr::core::vector3df radius = irr::core::vector3df(500, 500, 500);
+    irr::core::vector3df corner1 = _camera->getPosition() - radius;
+    irr::core::vector3df corner2 = _camera->getPosition() + radius;
+    OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);
 
     while (Building *building = static_cast<Building*>(octiter.next())) {
         if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {

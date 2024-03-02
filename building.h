@@ -13,42 +13,81 @@
 #include "chunk.h"
 
 
+struct BuildingChunk {
+    size_t _nblocks;
+    irr::scene::SMesh *_mesh;
+    irr::scene::SMeshBuffer *_meshBuffer;
+    irr::scene::ISceneNode *_node;
+    irr::scene::ITriangleSelector *_selector;  
+    bool in_use;
+};
 
 class Building : public Entity {
 private:
-    std::vector<std::shared_ptr<Chunk> > _chunks;
+    irr::core::vector3df _rel_coords; /* FIXME remove */
 
     irr::core::vector3df _position;
     irr::core::quaternion _orientation;
+
+    irr::s32 _dimx, _dimy, _dimz;
+    
+    Octree _blocks;
+    size_t _nblocks;
+    
+    irr::core::vector3di _hilighted;
+    bool _hasHilight;
+
+    irr::s32  _building_id;
+
+    static irr::s32 _next_id;
+    static std::map<irr::s32, Building*> _map;
+
+    BuildingChunk *_chunks;
 
 public:
     Building(irr::scene::ISceneManager *smgr);
     virtual void process(float);
 
-   inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
-        _chunks[0]->addBlock(where, texture_coords);
+    inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
 
+        Block *b = new Block();
+        b->setPosition(irr::core::vector3df(where.X, where.Y, where.Z));
+
+        if (!_blocks.belongsHere(b->getPosition())) {
+            delete b;
+            return;
+        }        
+        b->where = where;    
+        b->texture_coords = texture_coords;    
+        _blocks.insert(*b);  
+        _nblocks++;
     }
 
     inline void delBlock(const irr::core::vector3di &where) {
-        _chunks[0]->delBlock(where);
-    }    
+        Octree *octree = _blocks.find(irr::core::vector3df(where.X, where.Y, where.Z));
+        std::vector<OctreeNode*> &_nodes = octree->getNodes();
+        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [&where](OctreeNode*n) { return static_cast<Block*>(n)->where == where; }), _nodes.end());
+        _nblocks--;
+    }
 
     inline void hilightBlock(const irr::core::vector3di &where) {
-        _chunks[0]->hilightBlock(where);
+        _hilighted = where;
+        _hasHilight = true;
     }
     
     inline void removeHilight() {
-        _chunks[0]->removeHilight();
+        _hasHilight = false;
     }
 
-    void updateMesh(const TextureId &tid) {
-        _chunks[0]->updateMesh(tid);
+/*
+    inline irr::scene::ITriangleSelector *getSelector(void) const {
+        return _selector;
     }
+*/
 
-    void updatePositionAndOrientation() {
-        _chunks[0]->updatePositionAndOrientation();
-    }    
+    void updateMesh(const TextureId &tid);
+
+    void updatePositionAndOrientation();
 
     inline irr::core::vector3df getPosition(void) const {
         return _position;
@@ -72,11 +111,14 @@ public:
         //struct timespec start, stop;
         //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &start);
         //for (int lol = 0; lol < NUMBONKS; lol++) {
+
+            /*
             for (auto iter = _chunks.begin(); iter != _chunks.end(); iter++) {
                 for (auto iter2 = other->_chunks.begin(); iter2 != other->_chunks.end(); iter2++) {
                     if ((*iter)->bonk(*iter2)) return true;
                 }
             }
+            */
         //}
         //clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &stop);
 

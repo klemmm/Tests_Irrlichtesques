@@ -383,7 +383,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
                 _camera_position = _camera_position - collisionBuilding->getPosition();
                 Transforms::rotate(_camera_position, inv_ship_rot);
                 
-            } else {
+            } else if (ship != nullptr) {
                 /* unboard */
                 Transforms::rotate(_camera_position, ship->getOrientation());
                 _camera_position = _camera_position + ship->getPosition();

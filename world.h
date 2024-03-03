@@ -5,6 +5,7 @@
 #include <fcntl.h>
 #include <irrlicht/irrlicht.h>
 #include "kbd_status.h"
+#include "transforms.h"
 #include "building.h"
 #include "octree.h"
 #include "hud.h"
@@ -29,14 +30,14 @@ public:
     }
 
 private:
-    void position_and_orient_camera(const irr::core::vector3df &position, const irr::core::quaternion &orientation);
+    void position_and_orient_camera(const vector3dfp &position, const irr::core::quaternion &orientation);
 
     irr::scene::ISceneManager *_smgr;
 
     irr::scene::ICameraSceneNode *_camera;
 
     irr::core::quaternion _camera_orientation;
-    irr::core::vector3df _camera_position;
+    vector3dfp _camera_position;
 
     Octree _buildings;
 

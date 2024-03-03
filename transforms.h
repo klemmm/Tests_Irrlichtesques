@@ -38,6 +38,13 @@ public:
         return _val >> POINT_BITS;
     }      
 
+    inline fpnum operator+=(const fpnum &other) {
+        fpnum res;
+        res._val = _val + other._val;
+        _val = res._val;
+        return res;
+    }
+
     inline fpnum operator+(const fpnum &other) const {
         fpnum res;
         res._val = _val + other._val;
@@ -56,6 +63,13 @@ public:
         return res;
     }
 
+    inline fpnum operator+=(const int &other) {
+        fpnum res;
+        res._val = _val + (other << POINT_BITS);
+        _val = res._val;
+        return res;
+    }    
+
     inline fpnum operator-(const int &other) const {
         fpnum res;
         res._val = _val - (other << POINT_BITS);
@@ -68,6 +82,23 @@ public:
         res._val = -_val;
         return res;
     }    
+
+
+    inline fpnum operator-=(const fpnum &other) {
+        fpnum res;
+        res._val = _val - other._val;
+        _val = res._val;
+        return res;
+    }
+
+    inline fpnum operator-=(const int &other) {
+        fpnum res;
+        res._val = _val - (other << POINT_BITS);
+        _val = res._val;
+        return res;
+    }
+
+
 
     inline fpnum operator*(const fpnum &other) const {
         fpnum res;
@@ -109,6 +140,8 @@ typedef irr::core::vector3d<fpnum> vector3dfp;
 class Transforms {
 public:
     static void rotate(irr::core::vector3df &vec, const irr::core::quaternion &rot);
+
+    static void rotate(vector3dfp &vec, const irr::core::quaternion &rot);
 
     static void orient_node(irr::scene::ISceneNode &node, const irr::core::quaternion &rot);
 };

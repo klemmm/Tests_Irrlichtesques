@@ -2244,6 +2244,7 @@ CMakeFiles/TutoIrrlicht.dir/main.cpp.o: ../main.cpp \
   /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
   ../kbd_status.h \
   /usr/include/irrlicht/IEventReceiver.h \
+  ../transforms.h \
   ../building.h \
   /usr/include/c++/11/vector \
   /usr/include/c++/11/bits/stl_vector.h \
@@ -2270,7 +2271,6 @@ CMakeFiles/TutoIrrlicht.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/11/bits/unordered_map.h \
   /usr/include/c++/11/cassert \
   /usr/include/assert.h \
-  ../transforms.h \
   ../entity.h \
   ../octree.h \
   /usr/include/c++/11/stack \
@@ -3739,6 +3739,7 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
   /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
   ../kbd_status.h \
   /usr/include/irrlicht/IEventReceiver.h \
+  ../transforms.h \
   ../building.h \
   /usr/include/c++/11/vector \
   /usr/include/c++/11/bits/stl_vector.h \
@@ -3760,7 +3761,6 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
   /usr/include/c++/11/bits/unordered_map.h \
   /usr/include/c++/11/cassert \
   /usr/include/assert.h \
-  ../transforms.h \
   ../entity.h \
   ../octree.h \
   /usr/include/c++/11/stack \

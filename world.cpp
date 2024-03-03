@@ -74,7 +74,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::co
   
 }
 
-void World::position_and_orient_camera(const vector3df &position, const quaternion &orientation) {
+void World::position_and_orient_camera(const vector3dfp &position, const quaternion &orientation) {
         auto forward = vector3df(0, 0, 1);
         auto up = vector3df(0, 1, 0);
 
@@ -82,8 +82,8 @@ void World::position_and_orient_camera(const vector3df &position, const quaterni
         Transforms::rotate(up, orientation); 
 
 
-        _camera->setPosition(position);
-        _camera->setTarget(position + forward);
+        _camera->setPosition(irr::core::vector3df(position.X, position.Y, position.Z));
+        _camera->setTarget(irr::core::vector3df(position.X, position.Y, position.Z) + forward);
         _camera->setUpVector(up);
 }
 
@@ -145,7 +145,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
         _buildings.insert(*tomove);
     }
     
-    vector3df movement;
+    vector3dfp movement;
     quaternion rotation;
 
     if (!_invOpen) {
@@ -267,9 +267,10 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     _camera_position = _camera_position + movement;
 
     if (auto ship = _boarded.lock()) {
-        vector3df rotated_position = _camera_position;
+        vector3dfp rotated_position = _camera_position;
         Transforms::rotate(rotated_position, ship->getOrientation());
-        position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
+        /* FIXME */
+        // position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
     } else {
         position_and_orient_camera(_camera_position, _camera_orientation);
     }
@@ -394,20 +395,26 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             auto ship = _boarded.lock();
             if (ship  == nullptr && collisionBuilding) {
                 /* board */
+                // FIXME
+                /*
                 _boarded = collisionBuilding;
                 quaternion inv_ship_rot = collisionBuilding->getOrientation();
                 inv_ship_rot.makeInverse();
                 _camera_orientation = inv_ship_rot * _camera_orientation;
                 _camera_position = _camera_position - collisionBuilding->getPosition();
                 Transforms::rotate(_camera_position, inv_ship_rot);
+                */
                 
             } else if (ship != nullptr) {
                 /* unboard */
+                // FIXME
+                /*
                 Transforms::rotate(_camera_position, ship->getOrientation());
                 _camera_position = _camera_position + ship->getPosition();
                 _camera_orientation = ship->getOrientation() * _camera_orientation;
                 _boarded.reset();
                 _piloting = false;
+                */
 
             }
             

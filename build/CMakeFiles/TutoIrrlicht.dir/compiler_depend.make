@@ -722,7 +722,15 @@ CMakeFiles/TutoIrrlicht.dir/building.cpp.o: ../building.cpp \
   /usr/include/c++/11/bits/stl_stack.h \
   ../assets.h \
   ../constants.h \
-  ../chunk.h
+  ../chunk.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/linux/close_range.h
 
 CMakeFiles/TutoIrrlicht.dir/chunk.cpp.o: ../chunk.cpp \
   /usr/include/stdc-predef.h \
@@ -1135,7 +1143,15 @@ CMakeFiles/TutoIrrlicht.dir/chunk.cpp.o: ../chunk.cpp \
   /usr/include/c++/11/bits/stl_stack.h \
   ../assets.h \
   ../constants.h \
-  ../chunk.h
+  ../chunk.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/linux/close_range.h
 
 CMakeFiles/TutoIrrlicht.dir/entity.cpp.o: ../entity.cpp \
   /usr/include/stdc-predef.h \
@@ -2219,6 +2235,13 @@ CMakeFiles/TutoIrrlicht.dir/main.cpp.o: ../main.cpp \
   /usr/include/c++/11/backward/auto_ptr.h \
   /usr/include/c++/11/pstl/glue_memory_defs.h \
   /usr/include/c++/11/pstl/execution_defs.h \
+  /usr/include/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+  /usr/include/linux/falloc.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
   ../kbd_status.h \
   /usr/include/irrlicht/IEventReceiver.h \
   ../building.h \
@@ -3003,7 +3026,15 @@ CMakeFiles/TutoIrrlicht.dir/ship.cpp.o: ../ship.cpp \
   /usr/include/c++/11/bits/stl_stack.h \
   ../assets.h \
   ../constants.h \
-  ../chunk.h
+  ../chunk.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/linux/close_range.h
 
 CMakeFiles/TutoIrrlicht.dir/transforms.cpp.o: ../transforms.cpp \
   /usr/include/stdc-predef.h \
@@ -3699,6 +3730,13 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
   /usr/include/c++/11/backward/auto_ptr.h \
   /usr/include/c++/11/pstl/glue_memory_defs.h \
   /usr/include/c++/11/pstl/execution_defs.h \
+  /usr/include/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+  /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+  /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+  /usr/include/linux/falloc.h \
+  /usr/include/x86_64-linux-gnu/bits/stat.h \
+  /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
   ../kbd_status.h \
   /usr/include/irrlicht/IEventReceiver.h \
   ../building.h \
@@ -3732,6 +3770,14 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
   /usr/include/c++/11/bits/stl_stack.h \
   ../constants.h \
   ../chunk.h \
+  /usr/include/unistd.h \
+  /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+  /usr/include/x86_64-linux-gnu/bits/environments.h \
+  /usr/include/x86_64-linux-gnu/bits/confname.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+  /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+  /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+  /usr/include/linux/close_range.h \
   ../hud.h \
   ../ship.h
 
@@ -3744,7 +3790,11 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 
 ../kbd_status.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
+/usr/include/x86_64-linux-gnu/bits/fcntl-linux.h:
+
+/usr/include/x86_64-linux-gnu/bits/fcntl.h:
+
+/usr/include/fcntl.h:
 
 /usr/include/c++/11/bits/istream.tcc:
 
@@ -3799,6 +3849,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 ../hud.cpp:
 
 ../chunk.cpp:
+
+/usr/include/x86_64-linux-gnu/bits/posix_opt.h:
 
 /usr/include/c++/11/bits/deque.tcc:
 
@@ -3926,6 +3978,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 
 /usr/include/c++/11/bits/stl_uninitialized.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h:
+
 /usr/include/c++/11/bits/stl_function.h:
 
 /usr/include/c++/11/bits/memoryfwd.h:
@@ -4025,6 +4079,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 /usr/include/irrlicht/IParticleMeshEmitter.h:
 
 /usr/include/irrlicht/SParticle.h:
+
+/usr/include/x86_64-linux-gnu/bits/struct_stat.h:
 
 /usr/include/irrlicht/IParticleEmitter.h:
 
@@ -4205,6 +4261,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 /usr/include/x86_64-linux-gnu/bits/types/timer_t.h:
 
 ../assets.cpp:
+
+/usr/include/linux/falloc.h:
 
 /usr/include/c++/11/bits/postypes.h:
 
@@ -4451,6 +4509,8 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: ../world.cpp \
 /usr/include/irrlicht/plane3d.h:
 
 /usr/include/irrlicht/vector3d.h:
+
+/usr/include/x86_64-linux-gnu/bits/stat.h:
 
 /usr/include/irrlicht/line3d.h:
 

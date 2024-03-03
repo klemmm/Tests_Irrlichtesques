@@ -5,6 +5,7 @@
 #include <map>
 #include <algorithm>
 #include <memory>
+#include <unistd.h>
 #include "transforms.h"
 #include "entity.h"
 #include "assets.h"
@@ -121,6 +122,23 @@ public:
     inline virtual ~Chunk(void) {
         _map.erase(_chunk_id);
     }
+
+    inline void save(int fd) {
+        OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
+
+        while (Block *block = static_cast<Block*>(octiter.next())) {
+            irr::s32 X = block->where.X + _rel_coords.X;
+            irr::s32 Y = block->where.Y + _rel_coords.Y;
+            irr::s32 Z = block->where.Z + _rel_coords.Z;
+            write(fd, (void*) &X, sizeof(irr::s32));
+            write(fd, (void*) &Y, sizeof(irr::s32));
+            write(fd, (void*) &Z, sizeof(irr::s32));
+            write(fd, (void*) &block->texture_coords.X, sizeof(irr::s32));
+            write(fd, (void*) &block->texture_coords.Y, sizeof(irr::s32));
+        }
+    }
+
+
     virtual void process(float);
     irr::core::vector3di getRelCoords(void) { return _rel_coords; }
 
@@ -143,8 +161,18 @@ public:
         }        
         b->where = where;    
         b->texture_coords = texture_coords;    
-        _blocks.insert(*b);  
-        _nblocks++;
+
+        Octree *octree = _blocks.find(irr::core::vector3df(where.X, where.Y, where.Z));
+
+        if (octree)  {
+            std::vector<OctreeNode*> &_nodes = octree->getNodes();
+            if (_nodes.size() == 1 && _nodes.front()->getPosition() == b->getPosition()) {
+                return;
+            }
+        }
+        
+          _blocks.insert(*b);  
+          _nblocks++;
     }
 
     inline void delBlock(const irr::core::vector3di &where) {

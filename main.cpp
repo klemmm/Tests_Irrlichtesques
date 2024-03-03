@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "kbd_status.h"
 #include "hud.h"
+#include "transforms.h"
 
 using namespace irr;
 
@@ -63,6 +64,7 @@ private:
 };
 
 int main(void) {
+
     KbdStatusReceiver kbdstatus;
     IrrlichtDevice *device = createDevice( video::EDT_OPENGL, dimension2d<u32>(Constants::WIDTH, Constants::HEIGHT), 32, false, true, true, &kbdstatus);
 
@@ -109,6 +111,7 @@ int main(void) {
         hud.draw(driver);
         driver->endScene();
     }
+    world.end();
     device->drop();
     return 0;
 }

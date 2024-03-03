@@ -26,6 +26,13 @@ public:
     Building(irr::scene::ISceneManager *smgr);
     virtual void process(float);
 
+    inline void save(int fd) {
+        OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
+
+        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+            chunk->save(fd);
+        }
+    }
     inline Chunk* findOrCreateChunk(const irr::core::vector3di &where) {
         irr::core::vector3di rel_coords = where;
         rel_coords.X &= ~(Constants::CHUNK_SIZE - 1);

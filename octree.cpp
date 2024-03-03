@@ -2,6 +2,7 @@
 #include "octree.h"
 
 void Octree::insert(OctreeNode &node) {
+
     _nodes.push_back(&node);
 
     if (_nodes.size() > _max_size) {

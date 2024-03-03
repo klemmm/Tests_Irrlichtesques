@@ -26,9 +26,26 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::co
     _camera->setFarValue(50000);
 
     Ship *testShip1 = new Ship(_smgr);
+    int fd = open("ship.dat", O_RDONLY);
+    if (fd != -1) {
+        irr::s32 X,Y,Z;
+        irr::s32 tx, ty;
+
+        while (read(fd, (void*) &X, sizeof(irr::s32)) != 0) {
+            read(fd, (void*) &Y, sizeof(irr::s32));
+            read(fd, (void*) &Z, sizeof(irr::s32));
+            read(fd, (void*) &tx, sizeof(irr::s32));
+            read(fd, (void*) &ty, sizeof(irr::s32));
+            
+            testShip1->addBlock(vector3di(X, Y, Z), vector2di(tx, ty));
+        }
+        close(fd);
+
+    } else {
     
-    for (int i = 0; i < 3; i++)
-        testShip1->addBlock(vector3di(0, 0, i), vector2di(0, 0));
+        for (int i = 0; i < 3; i++)
+            testShip1->addBlock(vector3di(0, 0, i), vector2di(0, 0));
+    }
     
     testShip1->updateMesh(TextureId::DEFAULT);
 
@@ -45,6 +62,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::co
     testShip2->updateMesh(TextureId::DEFAULT);
     _buildings.insert(*testShip2);
     
+    _me = testShip1;
 
     scene::ISceneNode* skybox = _smgr->addSkyBoxSceneNode(
         TextureLoader::get(SKYBOX_UP),
@@ -278,12 +296,12 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
     core::line3d<f32> ray;
     ray.start = _camera->getPosition();
-    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 500.0f;
+    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 1000.0f;
 
     float distance = FLT_MAX;
     float cur_dist;
     std::shared_ptr<Building> collisionBuilding = nullptr;
-    irr::core::vector3df radius = irr::core::vector3df(5000, 5000, 5000);
+    irr::core::vector3df radius = irr::core::vector3df(10000, 10000, 10000);
     irr::core::vector3df corner1 = _camera->getPosition() - radius;
     irr::core::vector3df corner2 = _camera->getPosition() + radius;
     OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);

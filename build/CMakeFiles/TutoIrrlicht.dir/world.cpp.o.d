@@ -316,7 +316,12 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: \
  /usr/include/c++/11/bits/atomic_lockfree_defines.h \
  /usr/include/c++/11/backward/auto_ptr.h \
  /usr/include/c++/11/pstl/glue_memory_defs.h \
- /usr/include/c++/11/pstl/execution_defs.h \
+ /usr/include/c++/11/pstl/execution_defs.h /usr/include/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl.h \
+ /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \
+ /usr/include/x86_64-linux-gnu/bits/types/struct_iovec.h \
+ /usr/include/linux/falloc.h /usr/include/x86_64-linux-gnu/bits/stat.h \
+ /usr/include/x86_64-linux-gnu/bits/struct_stat.h \
  /home/clement/code/tutoirrlicht/kbd_status.h \
  /usr/include/irrlicht/IEventReceiver.h \
  /home/clement/code/tutoirrlicht/building.h /usr/include/c++/11/vector \
@@ -339,6 +344,12 @@ CMakeFiles/TutoIrrlicht.dir/world.cpp.o: \
  /usr/include/c++/11/deque /usr/include/c++/11/bits/stl_deque.h \
  /usr/include/c++/11/bits/deque.tcc /usr/include/c++/11/bits/stl_stack.h \
  /home/clement/code/tutoirrlicht/constants.h \
- /home/clement/code/tutoirrlicht/chunk.h \
- /home/clement/code/tutoirrlicht/hud.h \
+ /home/clement/code/tutoirrlicht/chunk.h /usr/include/unistd.h \
+ /usr/include/x86_64-linux-gnu/bits/posix_opt.h \
+ /usr/include/x86_64-linux-gnu/bits/environments.h \
+ /usr/include/x86_64-linux-gnu/bits/confname.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_posix.h \
+ /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
+ /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
+ /usr/include/linux/close_range.h /home/clement/code/tutoirrlicht/hud.h \
  /home/clement/code/tutoirrlicht/ship.h

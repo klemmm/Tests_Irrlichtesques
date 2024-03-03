@@ -7,6 +7,7 @@
 
 class OctreeNode {
 public:
+    friend class Octree; /* FIXME */
     inline void setPosition(const irr::core::vector3df position) {
         _position = position;
     }    

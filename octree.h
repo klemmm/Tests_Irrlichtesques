@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stack>
+#include <memory>
 #include "common.h"
 #include "transforms.h"
 
@@ -45,8 +46,15 @@ public:
             _octants[i] = nullptr;
         }
     }
+    inline ~Octree(void) {
+        //printf("bye\n");
+        for (int i = 0; i < 8; i++) {
+            if (_octants[i] != nullptr)
+                delete _octants[i];
+        }
+    }
 
-    inline std::vector<OctreeNode*> &getNodes(void) {
+    inline std::vector<std::shared_ptr<OctreeNode> > &getNodes(void) {
         return _nodes;
     }
 
@@ -56,16 +64,16 @@ public:
             (_corner1.Z <= point.Z && point.Z < _corner2.Z));
     }
 
-    void insert(OctreeNode &node);
+    void insert(std::shared_ptr<OctreeNode> node);
 
     Octree *find(const vector3dfp &point);
     
 
-    inline std::vector<OctreeNode*>::const_iterator begin(void) {
+    inline std::vector<std::shared_ptr<OctreeNode> >::const_iterator begin(void) {
         return _nodes.begin();
     }
 
-    inline std::vector<OctreeNode*>::const_iterator end(void) {
+    inline std::vector<std::shared_ptr<OctreeNode> >::const_iterator end(void) {
         return _nodes.end();
     }
 
@@ -80,7 +88,7 @@ private:
     vector3dfp _corner1, _corner2;
 
     Octree *_octants[8];
-    std::vector<OctreeNode*> _nodes;
+    std::vector<std::shared_ptr<OctreeNode> > _nodes;
 
     int _max_size;
     int _max_depth;
@@ -128,7 +136,7 @@ class OctreeNodeIterator {
    private:
     OctreeIterator _iter;
     Octree *_current;
-    std::vector<OctreeNode*>::const_iterator _node_iter;
+    std::vector<std::shared_ptr<OctreeNode> >::const_iterator _node_iter;
     bool _empty;
 public:
     OctreeNodeIterator(Octree &octree) : _iter(OctreeIterator(octree)), _current(_iter.next())  {
@@ -139,7 +147,7 @@ public:
             _empty = true;
         }    
     }
-    inline OctreeNode *next() {
+    inline std::shared_ptr<OctreeNode> next() {
     
         if (_empty) return nullptr;
 
@@ -148,7 +156,7 @@ public:
             if (!_current) return nullptr;
             _node_iter = _current->begin();
         }
-        OctreeNode *node = *_node_iter;
+        std::shared_ptr<OctreeNode> node = *_node_iter;
         _node_iter++;
         return node;
     } 
@@ -159,7 +167,7 @@ class OctreeBoundedNodeIterator {
    private:
     OctreeBoundedIterator _iter;
     Octree *_current;
-    std::vector<OctreeNode*>::const_iterator _node_iter;
+    std::vector<std::shared_ptr<OctreeNode> >::const_iterator _node_iter;
     bool _empty;
 public:
     OctreeBoundedNodeIterator(Octree &octree, const vector3dfp &corner1, const vector3dfp &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
@@ -171,14 +179,14 @@ public:
         }
     }
 
-    inline OctreeNode *next() {
+    inline std::shared_ptr<OctreeNode> next() {
         if (_empty) return nullptr;
         while (_node_iter == _current->end()) {
             _current = _iter.next();
             if (!_current) return nullptr;
             _node_iter = _current->begin();
         }
-        OctreeNode *node = *_node_iter;
+        std::shared_ptr<OctreeNode> node = *_node_iter;
         _node_iter++;
         return node;
     } 

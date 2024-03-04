@@ -30,7 +30,8 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
     _camera->setFarValue(50000);
 
     
-    Ship *testShip1 = new Ship(_smgr);
+    
+    std::shared_ptr<Ship> testShip1 = std::shared_ptr<Ship>(new Ship(_smgr));
     int fd = open("ship.dat", O_RDONLY);
     if (fd != -1) {
         irr::s32 X,Y,Z;
@@ -48,24 +49,27 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
 
     } else {
     
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 1; i++)
             testShip1->addBlock(vector3di(0, 0, i), vector2di(0, 0));
     }
     
     testShip1->updateMesh(TextureId::DEFAULT);
 
-    _buildings.insert(*testShip1);
+    _buildings.insert(testShip1);
+    
+    
 
+    std::shared_ptr<Building> testShip2 = std::shared_ptr<Building>(new Building(_smgr));
 
-    Building *testShip2 = new Building(_smgr);
-
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 1; i++)
         testShip2->addBlock(vector3di(0, i, 0), vector2di(0, 1));
     
     testShip2->setPosition(vector3dfp(500, 500, 500));
     testShip2->setOrientation(quaternion(45, 45, 45));
     testShip2->updateMesh(TextureId::DEFAULT);
-    _buildings.insert(*testShip2);
+    _buildings.insert(testShip2);
+    
+    
     
     _me = testShip1;
 
@@ -106,12 +110,11 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     
     OctreeNodeIterator octiterX = OctreeNodeIterator(_buildings);
 
-    while (Building *buildingX = static_cast<Building*>(octiterX.next())) {
+    while (std::shared_ptr<Building> buildingX = std::static_pointer_cast<Building>(octiterX.next())) {
         OctreeNodeIterator octiterY = OctreeNodeIterator(_buildings);
-        while (Building *buildingY = static_cast<Building*>(octiterY.next())) {
+        while (std::shared_ptr<Building> buildingY = std::static_pointer_cast<Building>(octiterY.next())) {
             if (buildingX != buildingY) {
-                auto *by = new std::shared_ptr<Building>(buildingY);
-                bonk |= buildingX->bonk(*by);
+                bonk |= buildingX->bonk(buildingY);
             }
         }
     }
@@ -125,29 +128,30 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     }
     OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
 
-    std::vector<std::pair<Building*, vector3dfp> > moved;
-    while (Building *building = static_cast<Building*>(octiter1.next())) {
+    std::vector<std::pair<std::shared_ptr<Building>, vector3dfp> > moved;
+    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter1.next())) {
         vector3dfp old_pos = building->getPosition();
         building->process(delta);
         Octree *octant = octiter1.getCurrent();
         if (!octant->belongsHere(building->getPosition())) {
-            moved.push_back(std::pair<Building*, vector3dfp>(building, old_pos));
+            moved.push_back(std::pair<std::shared_ptr<Building>, vector3dfp>(building, old_pos));
             // printf("MOOOOOOOOOOOOOOOVE %f %f %f ; %f %f %f -> %f %f %f\n", 
             // building->getPosition().X , building->getPosition().Y, building->getPosition().Z,
             // octant->_corner1.X, octant->_corner1.Y, octant->_corner1.Z,
             // octant->_corner2.X, octant->_corner2.Y, octant->_corner2.Z);
         }
     }
+
     for (auto iter = moved.begin(); iter != moved.end(); iter++) {
-        Building *tomove = (*iter).first;
+        std::shared_ptr<Building> tomove = (*iter).first;
         Octree *octree = _buildings.find((*iter).second);
-        std::vector<OctreeNode*> &_nodes = octree->getNodes();
+        std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
         
-        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [tomove](OctreeNode*n) { 
-            return static_cast<Building*>(n) == tomove; }
+        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [tomove](std::shared_ptr<OctreeNode> n) { 
+            return std::static_pointer_cast<Building>(n) == tomove; }
             ), _nodes.end());
 
-        _buildings.insert(*tomove);
+        _buildings.insert(tomove);
     }
     
     vector3dfp movement;
@@ -314,16 +318,14 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     vector3dfp corner2 = tmp_pos + radius;
     OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);
     
-    while (Building *building = static_cast<Building*>(octiter.next())) {
+    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter.next())) {
         
         if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
             if (cur_dist < distance) {
                 distance = cur_dist;
                 block_coords = tmp_block_coords;
                 adjacent_block_coords = tmp_adjacent_block_coords;
-                collisionBuilding = std::shared_ptr<Building>(building);
-                new std::shared_ptr<Building>(collisionBuilding); // FIXME
-                
+                collisionBuilding = building;                
             }
         }
     }

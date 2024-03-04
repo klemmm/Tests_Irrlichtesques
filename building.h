@@ -29,11 +29,11 @@ public:
     inline void save(int fd) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
 
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
             chunk->save(fd);
         }
     }
-    inline Chunk* findOrCreateChunk(const irr::core::vector3di &where) {
+    inline std::shared_ptr<Chunk> findOrCreateChunk(const irr::core::vector3di &where) {
         irr::core::vector3di rel_coords = where;
         rel_coords.X &= ~(Constants::CHUNK_SIZE - 1);
         rel_coords.Y &= ~(Constants::CHUNK_SIZE - 1);
@@ -42,45 +42,45 @@ public:
         Octree *octant = _chunks.find(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
         if (octant == nullptr)
             return nullptr;
-        Chunk *chunk = nullptr;
+        std::shared_ptr<Chunk> chunk = nullptr;
         for (auto iter = octant->begin(); iter != octant->end(); iter++) {
-            if (static_cast<Chunk*>(*iter)->belongsHere(where)) {
-                chunk = static_cast<Chunk*>(*iter);
+            if (std::static_pointer_cast<Chunk>(*iter)->belongsHere(where)) {
+                chunk = std::static_pointer_cast<Chunk>(*iter);
                 break;
             }
         }
         if (chunk == nullptr) {
           
-            chunk = new Chunk(_smgr, this, rel_coords);
+            chunk = std::shared_ptr<Chunk>(new Chunk(_smgr, this, rel_coords));
             chunk->setPosition(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
            // printf("create a new chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
 
-            _chunks.insert(*chunk);
+            _chunks.insert(chunk);
         } 
         return chunk;
     }
 
    inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
-        Chunk *chunk = findOrCreateChunk(where);
+        std::shared_ptr<Chunk> chunk = findOrCreateChunk(where);
         if (chunk != nullptr)
             chunk->addBlock(where - chunk->getRelCoords(), texture_coords);
     }
 
     inline void delBlock(const irr::core::vector3di &where) {
-        Chunk *chunk = findOrCreateChunk(where);
+        std::shared_ptr<Chunk> chunk = findOrCreateChunk(where);
         if (chunk != nullptr)
             chunk->delBlock(where - chunk->getRelCoords());
     }    
 
     inline void hilightBlock(const irr::core::vector3di &where) {
-        Chunk *chunk = findOrCreateChunk(where);
+        std::shared_ptr<Chunk> chunk = findOrCreateChunk(where);
         if (chunk != nullptr)
             chunk->hilightBlock(where - chunk->getRelCoords());
     }
     
     inline void removeHilight() {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
             chunk->removeHilight(); /* FIXME */
         }
     }
@@ -88,7 +88,7 @@ public:
     void updateMesh(const TextureId &tid) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
         //printf("On lance le updatemesh\n");
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
             chunk->updateMesh(tid);
         }
         // printf("on finit le updatemesh\n");
@@ -96,7 +96,7 @@ public:
 
     void updatePositionAndOrientation() {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
             chunk->updatePositionAndOrientation(); /* FIXME */
         }
     }    
@@ -113,9 +113,9 @@ public:
 
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
 
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
             OctreeNodeIterator octiter2 = OctreeNodeIterator(other->_chunks);
-            while (Chunk *chunk2 = static_cast<Chunk*>(octiter2.next())) {
+            while (std::shared_ptr<Chunk> chunk2 = std::static_pointer_cast<Chunk>(octiter2.next())) {
                 //printf("testing bonk %p %p\n", chunk, chunk2);
                 if (chunk->bonk(chunk2)) return true;
 

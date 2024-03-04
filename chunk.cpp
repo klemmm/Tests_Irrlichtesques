@@ -46,7 +46,7 @@ void Chunk::updateMesh(const TextureId &texture_id) {
                 _selector->drop();
         
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
-        while (Block *block = static_cast<Block*>(octiter.next())) {
+        while (std::shared_ptr<Block> block = std::static_pointer_cast<Block>(octiter.next())) {
                 SColor color = (_hasHilight && _hilighted == block->where) ? SColor(255,255,255,255) : SColor(255,128,128,128);
                // printf("put block in mesh\n");
                 
@@ -115,6 +115,7 @@ void Chunk::updateMesh(const TextureId &texture_id) {
         _node->setMaterialFlag(EMF_LIGHTING, false);
         _node->setMaterialFlag(EMF_NORMALIZE_NORMALS, true); 
         _node->setMaterialTexture(0, TextureLoader::get(texture_id));
+
         _selector = _smgr->createOctreeTriangleSelector(_mesh, _node, 128);  
 }
 
@@ -137,7 +138,7 @@ Chunk* Chunk::getChunkFromId(irr::s32 id) {
 }
 
 
-bool Chunk::bonk(Chunk* other) {
+bool Chunk::bonk(std::shared_ptr<Chunk> other) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
         
 
@@ -151,7 +152,7 @@ bool Chunk::bonk(Chunk* other) {
 
         int i, j;
         i = 0;
-        while (Block *block = static_cast<Block*>(octiter.next())) {
+        while (std::shared_ptr<Block> block = std::static_pointer_cast<Block>(octiter.next())) {
 
                 vector3dfp rel = vector3dfp(block->where.X, block->where.Y, block->where.Z)*Constants::BLOCK_SIZE*2;
                 Transforms::rotate(rel, _building->getOrientation());
@@ -171,7 +172,7 @@ bool Chunk::bonk(Chunk* other) {
                 vector3dfp corner2 = vector3dfp(rel2 + radius);
                 OctreeBoundedNodeIterator octiter2 = OctreeBoundedNodeIterator(other->_blocks, corner1, corner2);  
                 j = 0;      
-                while (Block *block2 = static_cast<Block*>(octiter2.next())) {
+                while (std::shared_ptr<Block> block2 = std::static_pointer_cast<Block>(octiter2.next())) {
                         //printf("testing with abspos=%f %f %f, abspos2= %f %f %f\n", abs_pos.X, abs_pos.Y, abs_pos.Z, abs_pos2.X, abs_pos2.Y, abs_pos2.Z);
                         fflush(stdout);
                         if (block->bonk(abs_pos, abs_pos2, _building->getOrientation(), other->_building->getOrientation(), block2)) return true;

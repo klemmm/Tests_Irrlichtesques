@@ -27,7 +27,7 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
 
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
 
-        while (Chunk *chunk = static_cast<Chunk*>(octiter.next())) {
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
 
                 ITriangleSelector *selector = chunk->getSelector();
                 vector3df tmpCollisionPoint;

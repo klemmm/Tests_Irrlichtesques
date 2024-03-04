@@ -19,7 +19,7 @@ struct Block : public OctreeNode {
     irr::core::vector3di where;        
     irr::core::vector2di texture_coords;
 
-    inline bool bonk(const vector3dfp &pos, vector3dfp &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const Block *other) {
+    inline bool bonk(const vector3dfp &pos, vector3dfp &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const std::shared_ptr<Block> other) {
         vector3dfp rel = vector3dfp(where.X, where.Y, where.Z)*Constants::BLOCK_SIZE*2;
         vector3dfp rel2 = vector3dfp(other->where.X, other->where.Y, other->where.Z)*Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel, rot);
@@ -117,16 +117,23 @@ private:
     static irr::s32 _next_id;
     static std::map<irr::s32, Chunk*> _map;
 
+
 public:
     Chunk(irr::scene::ISceneManager *smgr, Building*, const irr::core::vector3di &);
+
+
     inline virtual ~Chunk(void) {
+        delete _mesh;
+        delete _meshBuffer;
+        if (_selector != nullptr)
+                _selector->drop();        
         _map.erase(_chunk_id);
     }
 
     inline void save(int fd) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
 
-        while (Block *block = static_cast<Block*>(octiter.next())) {
+        while (std::shared_ptr<Block> block = std::static_pointer_cast<Block>(octiter.next())) {
             irr::s32 X = block->where.X + _rel_coords.X;
             irr::s32 Y = block->where.Y + _rel_coords.Y;
             irr::s32 Z = block->where.Z + _rel_coords.Z;
@@ -152,11 +159,10 @@ public:
     }
     inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
 
-        Block *b = new Block();
+        std::shared_ptr<Block> b = std::shared_ptr<Block>(new Block());
         b->setPosition(vector3dfp(where.X, where.Y, where.Z));
 
         if (!_blocks.belongsHere(b->getPosition())) {
-            delete b;
             return;
         }        
         b->where = where;    
@@ -165,20 +171,20 @@ public:
         Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
 
         if (octree)  {
-            std::vector<OctreeNode*> &_nodes = octree->getNodes();
+            std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
             if (_nodes.size() == 1 && _nodes.front()->getPosition() == b->getPosition()) {
                 return;
             }
         }
         
-          _blocks.insert(*b);  
+          _blocks.insert(b);  
           _nblocks++;
     }
 
     inline void delBlock(const irr::core::vector3di &where) {
         Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
-        std::vector<OctreeNode*> &_nodes = octree->getNodes();
-        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [&where](OctreeNode*n) { return static_cast<Block*>(n)->where == where; }), _nodes.end());
+        std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
+        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [&where](std::shared_ptr<OctreeNode> n) { return std::static_pointer_cast<Block>(n)->where == where; }), _nodes.end());
         _nblocks--;
     }
 
@@ -201,7 +207,7 @@ public:
         return _selector;
     }
 
-    bool bonk(Chunk* other);
+    bool bonk(std::shared_ptr<Chunk> other);
 
     static Chunk* getChunkFromId(irr::s32 id);
 

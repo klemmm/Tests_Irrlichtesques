@@ -1,9 +1,9 @@
 #include "common.h"
 #include "octree.h"
 
-void Octree::insert(OctreeNode &node) {
 
-    _nodes.push_back(&node);
+void Octree::insert(std::shared_ptr<OctreeNode> node) {
+    _nodes.push_back(node);
 
     if (_nodes.size() > _max_size) {
 
@@ -31,7 +31,7 @@ void Octree::insert(OctreeNode &node) {
         for (int i = 0; i < 8; i++) {
             for (auto node_iter = _nodes.begin(); node_iter != _nodes.end(); node_iter++) {
                 if (_octants[i]->belongsHere((*node_iter)->getPosition())) {
-                    _octants[i]->insert(*(*node_iter));
+                    _octants[i]->insert(*node_iter);
                 }
             }
         }

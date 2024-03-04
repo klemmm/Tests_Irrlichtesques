@@ -1,4 +1,5 @@
-#include <irrlicht/irrlicht.h>
+#include "common.h"
+
 
 #include "building.h"
 #include "assets.h"
@@ -13,7 +14,7 @@ using namespace video;
 irr::s32 Chunk::_next_id = 0;
 std::map<irr::s32, Chunk*>  Chunk::_map;
 
-Chunk::Chunk(irr::scene::ISceneManager *smgr, Building* building, const irr::core::vector3di &rel_coords) : Entity(smgr), _building(building), _rel_coords(rel_coords), _blocks(irr::core::vector3df(0, 0, 0), irr::core::vector3df(8, 8, 8)), _nblocks(0) {
+Chunk::Chunk(irr::scene::ISceneManager *smgr, Building* building, const irr::core::vector3di &rel_coords) : Entity(smgr), _building(building), _rel_coords(rel_coords), _blocks(vector3dfp(0, 0, 0), vector3dfp(8, 8, 8)), _nblocks(0) {
         
         _mesh = new SMesh();
         _meshBuffer = new SMeshBuffer();       
@@ -98,9 +99,12 @@ void Chunk::updateMesh(const TextureId &texture_id) {
         _mesh->recalculateBoundingBox();
 
         _node = _smgr -> addOctreeSceneNode(_mesh, 0, -1, 1024);
-        irr::core::vector3df rel_pos = vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        vector3dfp rel_pos = vector3dfp(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel_pos, _building->getOrientation());
-        _node->setPosition(_building->getPosition() + rel_pos);
+        vector3dfp newPos = _building->getPosition() + rel_pos;
+
+        _node->setPosition(irr::core::vector3df(newPos.X, newPos.Y, newPos.Z));
+
         Transforms::orient_node(*_node, _building->getOrientation());
         //printf("node pos: %f %f %f, node rotation: %f %f %f, rel_coords=%d %d %d\n", _node->getPosition().X, _node->getPosition().Y, _node->getPosition().Z, _node->getRotation().X, _node->getRotation().Y, _node->getRotation().Z,_rel_coords.X, _rel_coords.Y, _rel_coords.Z);
         fflush(stdout);
@@ -119,9 +123,10 @@ void Chunk::process(float delta) {
 }
 
 void Chunk::updatePositionAndOrientation(void) {
-        irr::core::vector3df rel_pos = irr::core::vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        vector3dfp rel_pos = vector3dfp(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel_pos, _building->getOrientation());
-        _node->setPosition(_building->getPosition() + rel_pos);
+        vector3dfp newPos = _building->getPosition() + rel_pos;
+        _node->setPosition(irr::core::vector3df(newPos.X, newPos.Y, newPos.Z));
         Transforms::orient_node(*_node, _building->getOrientation());
 }
 
@@ -136,23 +141,23 @@ bool Chunk::bonk(Chunk* other) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
         
 
-        irr::core::vector3df rel_pos = vector3df(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        vector3dfp rel_pos = vector3dfp(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel_pos, _building->getOrientation());
-        irr::core::vector3df abs_pos = _building->getPosition() + rel_pos;
+        vector3dfp abs_pos = _building->getPosition() + rel_pos;
 
-        irr::core::vector3df rel_pos2 = vector3df(other->_rel_coords.X, other->_rel_coords.Y, other->_rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        vector3dfp rel_pos2 = vector3dfp(other->_rel_coords.X, other->_rel_coords.Y, other->_rel_coords.Z) * Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel_pos2, other->_building->getOrientation());
-        irr::core::vector3df abs_pos2 = other->_building->getPosition() + rel_pos2;
+        vector3dfp abs_pos2 = other->_building->getPosition() + rel_pos2;
 
         int i, j;
         i = 0;
         while (Block *block = static_cast<Block*>(octiter.next())) {
 
-                irr::core::vector3df rel = irr::core::vector3df(block->where.X, block->where.Y, block->where.Z)*Constants::BLOCK_SIZE*2;
+                vector3dfp rel = vector3dfp(block->where.X, block->where.Y, block->where.Z)*Constants::BLOCK_SIZE*2;
                 Transforms::rotate(rel, _building->getOrientation());
-                irr::core::vector3df center = abs_pos + rel;
+                vector3dfp center = abs_pos + rel;
 
-                irr::core::vector3df rel2 = center - abs_pos2;
+                vector3dfp rel2 = center - abs_pos2;
                 irr::core::quaternion rot2 = other->_building->getOrientation();
                 rot2.makeInverse();
                 Transforms::rotate(rel2, rot2);
@@ -161,9 +166,9 @@ bool Chunk::bonk(Chunk* other) {
 
 
                 //printf("bonking %d pos %f,%f,%f rel2 %f %f %f\n", i, center.X, center.Y, center.Z, rel2.X, rel2.Y, rel2.Z);
-                irr::core::vector3df radius = irr::core::vector3df(1.5f, 1.5f, 1.5f);
-                irr::core::vector3df corner1 = irr::core::vector3df(rel2 - radius);
-                irr::core::vector3df corner2 = irr::core::vector3df(rel2 + radius);
+                vector3dfp radius = vector3dfp(1.5f, 1.5f, 1.5f);
+                vector3dfp corner1 = vector3dfp(rel2 - radius);
+                vector3dfp corner2 = vector3dfp(rel2 + radius);
                 OctreeBoundedNodeIterator octiter2 = OctreeBoundedNodeIterator(other->_blocks, corner1, corner2);  
                 j = 0;      
                 while (Block *block2 = static_cast<Block*>(octiter2.next())) {

@@ -1,4 +1,4 @@
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include "octree.h"
 
 void Octree::insert(OctreeNode &node) {
@@ -7,24 +7,24 @@ void Octree::insert(OctreeNode &node) {
 
     if (_nodes.size() > _max_size) {
 
-        irr::core::vector3df middle = (_corner1 + _corner2)/2;
+        vector3dfp middle = (_corner1 + _corner2)/2;
         
         _octants[0] = 
-            new Octree(irr::core::vector3df(_corner1.X, _corner1.Y, _corner1.Z), irr::core::vector3df(middle.X, middle.Y, middle.Z));
+            new Octree(vector3dfp(_corner1.X, _corner1.Y, _corner1.Z), vector3dfp(middle.X, middle.Y, middle.Z));
         _octants[Octant::X_PLUS] = 
-            new Octree(irr::core::vector3df(middle.X, _corner1.Y, _corner1.Z), irr::core::vector3df(_corner2.X, middle.Y, middle.Z));
+            new Octree(vector3dfp(middle.X, _corner1.Y, _corner1.Z), vector3dfp(_corner2.X, middle.Y, middle.Z));
         _octants[Octant::Y_PLUS] = 
-            new Octree(irr::core::vector3df(_corner1.X, middle.Y, _corner1.Z), irr::core::vector3df(middle.X, _corner2.Y, middle.Z));
+            new Octree(vector3dfp(_corner1.X, middle.Y, _corner1.Z), vector3dfp(middle.X, _corner2.Y, middle.Z));
         _octants[Octant::X_PLUS | Octant::Y_PLUS] = 
-            new Octree(irr::core::vector3df(middle.X, middle.Y, _corner1.Z), irr::core::vector3df(_corner2.X, _corner2.Y, middle.Z));
+            new Octree(vector3dfp(middle.X, middle.Y, _corner1.Z), vector3dfp(_corner2.X, _corner2.Y, middle.Z));
         _octants[Octant::Z_PLUS] = 
-            new Octree(irr::core::vector3df(_corner1.X, _corner1.Y, middle.Z), irr::core::vector3df(middle.X, middle.Y, _corner2.Z));
+            new Octree(vector3dfp(_corner1.X, _corner1.Y, middle.Z), vector3dfp(middle.X, middle.Y, _corner2.Z));
         _octants[Octant::Z_PLUS | Octant::X_PLUS] = 
-            new Octree(irr::core::vector3df(middle.X, _corner1.Y, middle.Z), irr::core::vector3df(_corner2.X, middle.Y, _corner2.Z));
+            new Octree(vector3dfp(middle.X, _corner1.Y, middle.Z), vector3dfp(_corner2.X, middle.Y, _corner2.Z));
         _octants[Octant::Z_PLUS | Octant::Y_PLUS] = 
-            new Octree(irr::core::vector3df(_corner1.X, middle.Y, middle.Z), irr::core::vector3df(middle.X, _corner2.Y, _corner2.Z));
+            new Octree(vector3dfp(_corner1.X, middle.Y, middle.Z), vector3dfp(middle.X, _corner2.Y, _corner2.Z));
         _octants[Octant::Z_PLUS | Octant::X_PLUS | Octant::Y_PLUS] = 
-            new Octree(irr::core::vector3df(middle.X, middle.Y, middle.Z), irr::core::vector3df(_corner2.X, _corner2.Y, _corner2.Z));
+            new Octree(vector3dfp(middle.X, middle.Y, middle.Z), vector3dfp(_corner2.X, _corner2.Y, _corner2.Z));
     }
 
     if (isSplitted()) {
@@ -40,7 +40,7 @@ void Octree::insert(OctreeNode &node) {
 }
 
 
-OctreeBoundedIterator::OctreeBoundedIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _octree(octree), _corner1(corner1), _corner2(corner2), _me(true) {
+OctreeBoundedIterator::OctreeBoundedIterator(Octree &octree, const vector3dfp &corner1, const vector3dfp &corner2) : _octree(octree), _corner1(corner1), _corner2(corner2), _me(true) {
     _stack.push(std::make_pair<Octree*, int>(&_octree, 0));
 } 
 
@@ -96,14 +96,14 @@ Octree *OctreeIterator::next(void) {
 }
 
 
-Octree *Octree::find(const irr::core::vector3df &point) {
+Octree *Octree::find(const vector3dfp &point) {
     if (!isSplitted()) {
         if (belongsHere(point)) {
             return this;
         } else return nullptr;
     }
 
-    irr::core::vector3df middle = (_corner1 + _corner2)/2;
+    vector3dfp middle = (_corner1 + _corner2)/2;
     int i = 0;
 
     i |= (middle.X <= point.X) ? X_PLUS : 0;

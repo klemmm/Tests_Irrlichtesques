@@ -1,6 +1,6 @@
 #ifndef BUILDING_H
 #define BUILDING_H 1
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include <vector>
 #include <map>
 #include <memory>
@@ -39,7 +39,7 @@ public:
         rel_coords.Y &= ~(Constants::CHUNK_SIZE - 1);
         rel_coords.Z &= ~(Constants::CHUNK_SIZE - 1);  
 
-        Octree *octant = _chunks.find(irr::core::vector3df(rel_coords.X, rel_coords.Y, rel_coords.Z));
+        Octree *octant = _chunks.find(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
         if (octant == nullptr)
             return nullptr;
         Chunk *chunk = nullptr;
@@ -52,7 +52,7 @@ public:
         if (chunk == nullptr) {
           
             chunk = new Chunk(_smgr, this, rel_coords);
-            chunk->setPosition(irr::core::vector3df(rel_coords.X, rel_coords.Y, rel_coords.Z));
+            chunk->setPosition(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
            // printf("create a new chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
 
             _chunks.insert(*chunk);

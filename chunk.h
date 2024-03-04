@@ -1,6 +1,6 @@
 #ifndef CHUNK_H
 #define CHUNK_H 1
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include <vector>
 #include <map>
 #include <algorithm>
@@ -19,19 +19,19 @@ struct Block : public OctreeNode {
     irr::core::vector3di where;        
     irr::core::vector2di texture_coords;
 
-    inline bool bonk(const irr::core::vector3df &pos, const irr::core::vector3df &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const Block *other) {
-        irr::core::vector3df rel = irr::core::vector3df(where.X, where.Y, where.Z)*Constants::BLOCK_SIZE*2;
-        irr::core::vector3df rel2 = irr::core::vector3df(other->where.X, other->where.Y, other->where.Z)*Constants::BLOCK_SIZE*2;
+    inline bool bonk(const vector3dfp &pos, vector3dfp &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const Block *other) {
+        vector3dfp rel = vector3dfp(where.X, where.Y, where.Z)*Constants::BLOCK_SIZE*2;
+        vector3dfp rel2 = vector3dfp(other->where.X, other->where.Y, other->where.Z)*Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel, rot);
         Transforms::rotate(rel2, rot2);
-        irr::core::vector3df center = pos + rel;
-        irr::core::vector3df center2 = pos2 + rel2;
+        vector3dfp center = pos + rel;
+        vector3dfp center2 = pos2 + rel2;
         
         if (center.getDistanceFromSQ(center2) > Constants::BLOCK_SIZE*Constants::BLOCK_SIZE*12) return false;
 
 
-        irr::core::vector3df base[3] = {irr::core::vector3df(1.0, 0, 0), irr::core::vector3df(0, 1.0, 0), irr::core::vector3df(0, 0, 1.0)};
-        irr::core::vector3df axes[15];
+        vector3dfp base[3] = {vector3dfp(1.0, 0, 0), vector3dfp(0, 1.0, 0), vector3dfp(0, 0, 1.0)};
+        vector3dfp axes[15];
         for (int i = 0; i < 3; i++) {
             axes[i] = base[i];
             Transforms::rotate(axes[i], rot);
@@ -46,18 +46,18 @@ struct Block : public OctreeNode {
             }
         }
 
-        irr::core::vector3df points[8];
-        irr::core::vector3df points2[8];
+        vector3dfp points[8];
+        vector3dfp points2[8];
         float half = Constants::BLOCK_SIZE;
         for (int i = 0; i < 8; i++) {
-            points[i] = irr::core::vector3df(
+            points[i] = vector3dfp(
                 (i & 1) ? +half : -half,
                 (i & 2) ? +half : -half,
                 (i & 4) ? +half : -half
             );
             Transforms::rotate(points[i], rot);
             points[i] += center;
-            points2[i] = irr::core::vector3df(
+            points2[i] = vector3dfp(
                 (i & 1) ? +half : -half,
                 (i & 2) ? +half : -half,
                 (i & 4) ? +half : -half
@@ -153,7 +153,7 @@ public:
     inline void addBlock(const irr::core::vector3di &where, const irr::core::vector2di texture_coords) {
 
         Block *b = new Block();
-        b->setPosition(irr::core::vector3df(where.X, where.Y, where.Z));
+        b->setPosition(vector3dfp(where.X, where.Y, where.Z));
 
         if (!_blocks.belongsHere(b->getPosition())) {
             delete b;
@@ -162,7 +162,7 @@ public:
         b->where = where;    
         b->texture_coords = texture_coords;    
 
-        Octree *octree = _blocks.find(irr::core::vector3df(where.X, where.Y, where.Z));
+        Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
 
         if (octree)  {
             std::vector<OctreeNode*> &_nodes = octree->getNodes();
@@ -176,7 +176,7 @@ public:
     }
 
     inline void delBlock(const irr::core::vector3di &where) {
-        Octree *octree = _blocks.find(irr::core::vector3df(where.X, where.Y, where.Z));
+        Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
         std::vector<OctreeNode*> &_nodes = octree->getNodes();
         _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [&where](OctreeNode*n) { return static_cast<Block*>(n)->where == where; }), _nodes.end());
         _nblocks--;

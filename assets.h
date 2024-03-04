@@ -1,6 +1,6 @@
 #ifndef ASSETS_H
 #define ASSETS_H 1
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 
 enum TextureId {
     DEFAULT = 0,

@@ -1,4 +1,4 @@
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include "assets.h"
 
 irr::video::ITexture *TextureLoader::textures[TextureId::TEXTURE_COUNT];

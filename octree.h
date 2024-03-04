@@ -3,20 +3,21 @@
 
 #include <vector>
 #include <stack>
-#include <irrlicht/irrlicht.h>
+#include "common.h"
+#include "transforms.h"
 
 class OctreeNode {
 public:
     friend class Octree; /* FIXME */
-    inline void setPosition(const irr::core::vector3df position) {
+    inline void setPosition(const vector3dfp position) {
         _position = position;
     }    
 
-    inline irr::core::vector3df getPosition(void) {
+    inline vector3dfp getPosition(void) {
         return _position;
     }
 private:
-    irr::core::vector3df _position;
+    vector3dfp _position;
 
 };
 
@@ -39,7 +40,7 @@ class Octree
     friend class OctreeIterator;
     friend class OctreeBoundedIterator;
 public:
-    inline Octree(const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _corner1(corner1), _corner2(corner2), _max_size(OctreeDefaults::MAX_SIZE), _max_depth(OctreeDefaults::MAX_DEPTH) {
+    inline Octree(const vector3dfp &corner1, const vector3dfp &corner2) : _corner1(corner1), _corner2(corner2), _max_size(OctreeDefaults::MAX_SIZE), _max_depth(OctreeDefaults::MAX_DEPTH) {
         for (int i = 0; i < 8; i++) {
             _octants[i] = nullptr;
         }
@@ -49,7 +50,7 @@ public:
         return _nodes;
     }
 
-    inline bool belongsHere(const irr::core::vector3df &point) {
+    inline bool belongsHere(const vector3dfp &point) {
         return ((_corner1.X <= point.X && point.X < _corner2.X) &&
             (_corner1.Y <= point.Y && point.Y < _corner2.Y) &&
             (_corner1.Z <= point.Z && point.Z < _corner2.Z));
@@ -57,7 +58,7 @@ public:
 
     void insert(OctreeNode &node);
 
-    Octree *find(const irr::core::vector3df &point);
+    Octree *find(const vector3dfp &point);
     
 
     inline std::vector<OctreeNode*>::const_iterator begin(void) {
@@ -76,7 +77,7 @@ public:
 
 private:
 
-    irr::core::vector3df _corner1, _corner2;
+    vector3dfp _corner1, _corner2;
 
     Octree *_octants[8];
     std::vector<OctreeNode*> _nodes;
@@ -103,11 +104,11 @@ class OctreeBoundedIterator {
 private:
     Octree &_octree;
     std::stack<std::pair<Octree*, int> > _stack;
-    const irr::core::vector3df &_corner1, &_corner2;
+    const vector3dfp &_corner1, &_corner2;
     bool _me;
 
 public:
-    OctreeBoundedIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2);
+    OctreeBoundedIterator(Octree &octree, const vector3dfp &corner1, const vector3dfp &corner2);
     Octree *next();
     inline bool hasNext(void) {
         return !_stack.empty();
@@ -161,7 +162,7 @@ class OctreeBoundedNodeIterator {
     std::vector<OctreeNode*>::const_iterator _node_iter;
     bool _empty;
 public:
-    OctreeBoundedNodeIterator(Octree &octree, const irr::core::vector3df &corner1, const irr::core::vector3df &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
+    OctreeBoundedNodeIterator(Octree &octree, const vector3dfp &corner1, const vector3dfp &corner2) : _iter(OctreeBoundedIterator(octree, corner1, corner2)), _current(_iter.next()) {
         if (_current) {
             _empty = false;
             _node_iter = _current->begin();

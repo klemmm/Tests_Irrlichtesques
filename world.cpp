@@ -1,4 +1,6 @@
-#include <irrlicht/irrlicht.h>
+class fpnum;
+
+#include "common.h"
 
 #include <unordered_set>
 
@@ -21,10 +23,13 @@ using namespace video;
 #define FORCE 500.0
 #define MAX_ROTATION 1.0 /* radian/sec */
 
-World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::core::vector3df(-Constants::WORLD_SIZE, -Constants::WORLD_SIZE, -Constants::WORLD_SIZE), irr::core::vector3df(Constants::WORLD_SIZE, Constants::WORLD_SIZE, Constants::WORLD_SIZE)),_wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false) {
+
+
+World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3dfp(-Constants::WORLD_SIZE, -Constants::WORLD_SIZE, -Constants::WORLD_SIZE), vector3dfp(Constants::WORLD_SIZE, Constants::WORLD_SIZE, Constants::WORLD_SIZE)),_wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false) {
     _camera = _smgr->addCameraSceneNode();
     _camera->setFarValue(50000);
 
+    
     Ship *testShip1 = new Ship(_smgr);
     int fd = open("ship.dat", O_RDONLY);
     if (fd != -1) {
@@ -57,7 +62,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(irr::co
     for (int i = 0; i < 4; i++)
         testShip2->addBlock(vector3di(0, i, 0), vector2di(0, 1));
     
-    testShip2->setPosition(vector3df(500, 500, 500));
+    testShip2->setPosition(vector3dfp(500, 500, 500));
     testShip2->setOrientation(quaternion(45, 45, 45));
     testShip2->updateMesh(TextureId::DEFAULT);
     _buildings.insert(*testShip2);
@@ -120,13 +125,13 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     }
     OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
 
-    std::vector<std::pair<Building*, irr::core::vector3df> > moved;
+    std::vector<std::pair<Building*, vector3dfp> > moved;
     while (Building *building = static_cast<Building*>(octiter1.next())) {
-        irr::core::vector3df old_pos = building->getPosition();
+        vector3dfp old_pos = building->getPosition();
         building->process(delta);
         Octree *octant = octiter1.getCurrent();
         if (!octant->belongsHere(building->getPosition())) {
-            moved.push_back(std::pair<Building*, irr::core::vector3df>(building, old_pos));
+            moved.push_back(std::pair<Building*, vector3dfp>(building, old_pos));
             // printf("MOOOOOOOOOOOOOOOVE %f %f %f ; %f %f %f -> %f %f %f\n", 
             // building->getPosition().X , building->getPosition().Y, building->getPosition().Z,
             // octant->_corner1.X, octant->_corner1.Y, octant->_corner1.Z,
@@ -152,7 +157,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
         if (_piloting) {
             if (auto ship = _boarded.lock()) {
-                vector3df accel;
+                vector3dfp accel;
                 if (kbd.isKeyDown(irr::KEY_KEY_Z)) {
                     accel.Z += delta * FORCE;
                 }
@@ -269,8 +274,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     if (auto ship = _boarded.lock()) {
         vector3dfp rotated_position = _camera_position;
         Transforms::rotate(rotated_position, ship->getOrientation());
-        /* FIXME */
-        // position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
+        position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
     } else {
         position_and_orient_camera(_camera_position, _camera_orientation);
     }
@@ -302,12 +306,16 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     float distance = FLT_MAX;
     float cur_dist;
     std::shared_ptr<Building> collisionBuilding = nullptr;
-    irr::core::vector3df radius = irr::core::vector3df(10000, 10000, 10000);
-    irr::core::vector3df corner1 = _camera->getPosition() - radius;
-    irr::core::vector3df corner2 = _camera->getPosition() + radius;
+    
+    vector3dfp radius = vector3dfp(10000, 10000, 10000);
+    irr::core::vector3df real_camera_pos = _camera->getPosition();
+    vector3dfp tmp_pos = vector3dfp(real_camera_pos.X, real_camera_pos.Y, real_camera_pos.Z);
+    vector3dfp corner1 = tmp_pos - radius;
+    vector3dfp corner2 = tmp_pos + radius;
     OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);
-
+    
     while (Building *building = static_cast<Building*>(octiter.next())) {
+        
         if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
             if (cur_dist < distance) {
                 distance = cur_dist;
@@ -395,26 +403,20 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             auto ship = _boarded.lock();
             if (ship  == nullptr && collisionBuilding) {
                 /* board */
-                // FIXME
-                /*
                 _boarded = collisionBuilding;
                 quaternion inv_ship_rot = collisionBuilding->getOrientation();
                 inv_ship_rot.makeInverse();
                 _camera_orientation = inv_ship_rot * _camera_orientation;
                 _camera_position = _camera_position - collisionBuilding->getPosition();
                 Transforms::rotate(_camera_position, inv_ship_rot);
-                */
                 
             } else if (ship != nullptr) {
                 /* unboard */
-                // FIXME
-                /*
                 Transforms::rotate(_camera_position, ship->getOrientation());
                 _camera_position = _camera_position + ship->getPosition();
                 _camera_orientation = ship->getOrientation() * _camera_orientation;
                 _boarded.reset();
                 _piloting = false;
-                */
 
             }
             

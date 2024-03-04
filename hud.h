@@ -1,7 +1,7 @@
 #ifndef HUD_H
 #define HUD_H 1
 
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 
 #define STATUS_MAX 64
 

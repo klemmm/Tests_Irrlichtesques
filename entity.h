@@ -1,6 +1,6 @@
 #ifndef ENTITY_H
 #define ENTITY_H 1
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include "octree.h"
 
 class Entity : public OctreeNode {

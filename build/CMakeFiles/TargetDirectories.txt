@@ -1,3 +1,0 @@
-/home/clement/code/tutoirrlicht/build/CMakeFiles/TutoIrrlicht.dir
-/home/clement/code/tutoirrlicht/build/CMakeFiles/edit_cache.dir
-/home/clement/code/tutoirrlicht/build/CMakeFiles/rebuild_cache.dir

@@ -1,4 +1,4 @@
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 
 #include "building.h"
 #include "assets.h"
@@ -11,7 +11,7 @@ using namespace scene;
 using namespace video;
 
 
-Building::Building(irr::scene::ISceneManager *smgr) : Entity(smgr), _chunks(irr::core::vector3df(-512, -512, -512), irr::core::vector3df(512, 512, 512)) {
+Building::Building(irr::scene::ISceneManager *smgr) : Entity(smgr), _chunks(vector3dfp(-512, -512, -512), vector3dfp(512, 512, 512)) {
 }
 
 void Building::process(float delta) {
@@ -33,7 +33,9 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
                 vector3df tmpCollisionPoint;
                 triangle3df tmpCollisionTriangle;
                 ISceneNode *tmpCollisionNode = nullptr;
+                
                 if (collMan->getCollisionPoint(ray, selector, tmpCollisionPoint, tmpCollisionTriangle, tmpCollisionNode)) {
+                        
                         if (distance > ray.start.getDistanceFrom(tmpCollisionPoint)) {
                                 distance = ray.start.getDistanceFrom(tmpCollisionPoint);
                                 collisionPoint = tmpCollisionPoint;
@@ -47,10 +49,11 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
         if (collisionNode == nullptr)
                 return false;
   
-  
-        collisionTriangle.pointA -= getPosition();
-        collisionTriangle.pointB -= getPosition();
-        collisionTriangle.pointC -= getPosition();
+        vector3dfp pos = getPosition();
+        irr::core::vector3df position = irr::core::vector3df(pos.X, pos.Y, pos.Z);
+        collisionTriangle.pointA -= position;
+        collisionTriangle.pointB -= position;
+        collisionTriangle.pointC -= position;
 
         irr::core::quaternion inv_rotation = getOrientation();
 

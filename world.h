@@ -3,7 +3,7 @@
 
 #include <memory>
 #include <fcntl.h>
-#include <irrlicht/irrlicht.h>
+#include "common.h"
 #include "kbd_status.h"
 #include "transforms.h"
 #include "building.h"
@@ -23,9 +23,6 @@ public:
         int fd = open("ship.dat", O_CREAT|O_TRUNC|O_WRONLY, 0644);
         _me->save(fd);
         close(fd);
-
-
-
 
     }
 

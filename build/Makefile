@@ -225,6 +225,30 @@ entity.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/entity.cpp.s
 .PHONY : entity.cpp.s
 
+fpnum.o: fpnum.cpp.o
+.PHONY : fpnum.o
+
+# target to build an object file
+fpnum.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/fpnum.cpp.o
+.PHONY : fpnum.cpp.o
+
+fpnum.i: fpnum.cpp.i
+.PHONY : fpnum.i
+
+# target to preprocess a source file
+fpnum.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/fpnum.cpp.i
+.PHONY : fpnum.cpp.i
+
+fpnum.s: fpnum.cpp.s
+.PHONY : fpnum.s
+
+# target to generate assembly for a file
+fpnum.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/fpnum.cpp.s
+.PHONY : fpnum.cpp.s
+
 hud.o: hud.cpp.o
 .PHONY : hud.o
 
@@ -390,6 +414,9 @@ help:
 	@echo "... entity.o"
 	@echo "... entity.i"
 	@echo "... entity.s"
+	@echo "... fpnum.o"
+	@echo "... fpnum.i"
+	@echo "... fpnum.s"
 	@echo "... hud.o"
 	@echo "... hud.i"
 	@echo "... hud.s"

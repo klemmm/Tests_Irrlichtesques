@@ -26,8 +26,9 @@ struct Block : public OctreeNode {
         Transforms::rotate(rel2, rot2);
         vector3dfp center = pos + rel;
         vector3dfp center2 = pos2 + rel2;
+
         
-        if (center.getDistanceFromSQ(center2) > Constants::BLOCK_SIZE*Constants::BLOCK_SIZE*12) return false;
+        if ((center/256).getDistanceFromSQ(center2/256) > fpnum(Constants::BLOCK_SIZE*Constants::BLOCK_SIZE*12)/65536) return false;
 
 
         vector3dfp base[3] = {vector3dfp(1.0, 0, 0), vector3dfp(0, 1.0, 0), vector3dfp(0, 0, 1.0)};
@@ -168,23 +169,24 @@ public:
         b->where = where;    
         b->texture_coords = texture_coords;    
 
-        Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
 
-        if (octree)  {
-            std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
-            if (_nodes.size() == 1 && _nodes.front()->getPosition() == b->getPosition()) {
+        const vector3dfp c1 = vector3dfp(where.X, where.Y, where.Z);
+        OctreeBoundedNodeIterator octiter(_blocks, c1, c1);
+        
+        
+        while (std::shared_ptr<Block> iter_block = std::static_pointer_cast<Block>(octiter.next())) {
+            if (iter_block->getPosition() == b->getPosition())
                 return;
-            }
         }
+
         
           _blocks.insert(b);  
           _nblocks++;
     }
 
     inline void delBlock(const irr::core::vector3di &where) {
-        Octree *octree = _blocks.find(vector3dfp(where.X, where.Y, where.Z));
-        std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
-        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [&where](std::shared_ptr<OctreeNode> n) { return std::static_pointer_cast<Block>(n)->where == where; }), _nodes.end());
+
+        _blocks.erase_if([&where](std::shared_ptr<OctreeNode> n) { return std::static_pointer_cast<Block>(n)->where == where; });
         _nblocks--;
     }
 

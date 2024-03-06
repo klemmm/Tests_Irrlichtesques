@@ -48,6 +48,11 @@ Octree *OctreeBoundedIterator::next(void) {
     Octree *current; 
     int index;
 
+    if (_me) {
+        _me = false;
+        return &_octree;
+    }
+
     do {
         current = _stack.top().first;
         index = _stack.top().second;
@@ -96,19 +101,3 @@ Octree *OctreeIterator::next(void) {
 }
 
 
-Octree *Octree::find(const vector3dfp &point) {
-    if (!isSplitted()) {
-        if (belongsHere(point)) {
-            return this;
-        } else return nullptr;
-    }
-
-    vector3dfp middle = (_corner1 + _corner2)/2;
-    int i = 0;
-
-    i |= (middle.X <= point.X) ? X_PLUS : 0;
-    i |= (middle.Y <= point.Y) ? Y_PLUS : 0;
-    i |= (middle.Z <= point.Z) ? Z_PLUS : 0;
-
-    return _octants[i]->find(point);
-}

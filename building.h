@@ -39,13 +39,18 @@ public:
         rel_coords.Y &= ~(Constants::CHUNK_SIZE - 1);
         rel_coords.Z &= ~(Constants::CHUNK_SIZE - 1);  
 
-        Octree *octant = _chunks.find(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
-        if (octant == nullptr)
-            return nullptr;
         std::shared_ptr<Chunk> chunk = nullptr;
-        for (auto iter = octant->begin(); iter != octant->end(); iter++) {
-            if (std::static_pointer_cast<Chunk>(*iter)->belongsHere(where)) {
-                chunk = std::static_pointer_cast<Chunk>(*iter);
+        // printf("look for chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
+        const vector3dfp c1 = vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z);
+        OctreeBoundedNodeIterator octiter(_chunks, c1, c1);
+        
+        
+        while (std::shared_ptr<Chunk> iter_chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
+            //abort();
+            if (iter_chunk->belongsHere(where)) {
+                // printf("reuse chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
+                
+                chunk = iter_chunk;
                 break;
             }
         }
@@ -53,10 +58,10 @@ public:
           
             chunk = std::shared_ptr<Chunk>(new Chunk(_smgr, this, rel_coords));
             chunk->setPosition(vector3dfp(rel_coords.X, rel_coords.Y, rel_coords.Z));
-           // printf("create a new chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
+            // printf("create a new chunk %d %d %d\n", rel_coords.X, rel_coords.Y, rel_coords.Z);
 
             _chunks.insert(chunk);
-        } 
+        }
         return chunk;
     }
 

@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <stack>
+#include <algorithm>
 #include <memory>
 #include "common.h"
 #include "transforms.h"
@@ -66,7 +67,16 @@ public:
 
     void insert(std::shared_ptr<OctreeNode> node);
 
-    Octree *find(const vector3dfp &point);
+
+    template <typename Predicate>
+    inline void erase_if(Predicate p) {
+        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), p), _nodes.end());
+        for (int i = 0; i < 8; i++) {
+            if (_octants[i]) {
+                _octants[i]->erase_if(p);
+            }
+        }
+    }
     
 
     inline std::vector<std::shared_ptr<OctreeNode> >::const_iterator begin(void) {
@@ -122,11 +132,11 @@ public:
         return !_stack.empty();
     }
     inline bool isDisjoint(Octree *octree) {
-        return (!octree) || (octree->_corner2.X < _corner1.X) ||
+        return (!octree) || (octree->_corner2.X <= _corner1.X) ||
             (octree->_corner1.X > _corner2.X) ||
-            (octree->_corner2.Y < _corner1.Y) ||
+            (octree->_corner2.Y <= _corner1.Y) ||
             (octree->_corner1.Y > _corner2.Y) ||
-            (octree->_corner2.Z < _corner1.Z) ||
+            (octree->_corner2.Z <= _corner1.Z) ||
             (octree->_corner1.Z > _corner2.Z);
     }
 };

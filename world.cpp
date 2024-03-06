@@ -49,7 +49,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
 
     } else {
     
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 3; i++)
             testShip1->addBlock(vector3di(0, 0, i), vector2di(0, 0));
     }
     
@@ -61,7 +61,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
 
     std::shared_ptr<Building> testShip2 = std::shared_ptr<Building>(new Building(_smgr));
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 4; i++)
         testShip2->addBlock(vector3di(0, i, 0), vector2di(0, 1));
     
     testShip2->setPosition(vector3dfp(500, 500, 500));
@@ -143,13 +143,13 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     }
 
     for (auto iter = moved.begin(); iter != moved.end(); iter++) {
+
         std::shared_ptr<Building> tomove = (*iter).first;
-        Octree *octree = _buildings.find((*iter).second);
-        std::vector<std::shared_ptr<OctreeNode> > &_nodes = octree->getNodes();
+
+
+        _buildings.erase_if([tomove](std::shared_ptr<OctreeNode> n) { 
+            return std::static_pointer_cast<Building>(n) == tomove; });       
         
-        _nodes.erase(std::remove_if(_nodes.begin(), _nodes.end(), [tomove](std::shared_ptr<OctreeNode> n) { 
-            return std::static_pointer_cast<Building>(n) == tomove; }
-            ), _nodes.end());
 
         _buildings.insert(tomove);
     }

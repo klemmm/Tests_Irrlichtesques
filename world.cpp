@@ -126,6 +126,39 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             strcpy(lastbuf, buf);
         }
     }
+
+        vector3di block_coords, adjacent_block_coords;
+    vector3di tmp_block_coords, tmp_adjacent_block_coords;
+
+    core::line3d<f32> ray;
+    ray.start = _camera->getPosition();
+    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 1000.0f;
+
+    float distance = FLT_MAX;
+    float cur_dist;
+    std::shared_ptr<Building> collisionBuilding = nullptr;
+    
+    vector3dfp radius = vector3dfp(10000, 10000, 10000);
+    irr::core::vector3df real_camera_pos = _camera->getPosition();
+    vector3dfp tmp_pos = vector3dfp(real_camera_pos.X, real_camera_pos.Y, real_camera_pos.Z);
+    vector3dfp corner1 = tmp_pos - radius;
+    vector3dfp corner2 = tmp_pos + radius;
+    OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);
+    
+    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter.next())) {
+        
+        if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
+            if (cur_dist < distance) {
+                distance = cur_dist;
+                block_coords = tmp_block_coords;
+                adjacent_block_coords = tmp_adjacent_block_coords;
+                collisionBuilding = building;                
+            }
+        }
+    }
+
+
+
     OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
 
 
@@ -303,38 +336,12 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
     std::unordered_set<std::shared_ptr<Building> > meshNeedsUpdate;
 
-    vector3di block_coords, adjacent_block_coords;
-    vector3di tmp_block_coords, tmp_adjacent_block_coords;
+
 
     std::shared_ptr<Building> new_hilighted_building = _hilighted_building.lock();
     irr::core::vector3di new_hilighted_block = _hilighted_block;
 
-    core::line3d<f32> ray;
-    ray.start = _camera->getPosition();
-    ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 1000.0f;
 
-    float distance = FLT_MAX;
-    float cur_dist;
-    std::shared_ptr<Building> collisionBuilding = nullptr;
-    
-    vector3dfp radius = vector3dfp(10000, 10000, 10000);
-    irr::core::vector3df real_camera_pos = _camera->getPosition();
-    vector3dfp tmp_pos = vector3dfp(real_camera_pos.X, real_camera_pos.Y, real_camera_pos.Z);
-    vector3dfp corner1 = tmp_pos - radius;
-    vector3dfp corner2 = tmp_pos + radius;
-    OctreeBoundedNodeIterator octiter = OctreeBoundedNodeIterator(_buildings, corner1, corner2);
-    
-    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter.next())) {
-        
-        if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
-            if (cur_dist < distance) {
-                distance = cur_dist;
-                block_coords = tmp_block_coords;
-                adjacent_block_coords = tmp_adjacent_block_coords;
-                collisionBuilding = building;                
-            }
-        }
-    }
 
     if (collisionBuilding) {
         new_hilighted_building = collisionBuilding;

@@ -86,7 +86,7 @@ public:
     inline void removeHilight() {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
         while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
-            chunk->removeHilight(); /* FIXME */
+            chunk->removeHilight(); /* FIXME remove le truc que sur le chunk concerné ou gérer ca ailleurs (le hilight devrait etre un singleton ou un truc dans world / hud)*/
         }
     }
 
@@ -102,7 +102,7 @@ public:
     void updatePositionAndOrientation() {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
         while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
-            chunk->updatePositionAndOrientation(); /* FIXME */
+            chunk->updatePositionAndOrientation();
         }
     }    
 

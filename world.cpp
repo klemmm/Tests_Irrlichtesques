@@ -84,7 +84,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
 }
 
 void World::position_and_orient_camera(const vector3dfp &position, const quaternion &orientation) {
-        auto forward = vector3df(0, 0, 1);
+        auto forward = vector3df(0, 0, 100);
         auto up = vector3df(0, 1, 0);
 
         Transforms::rotate(forward, orientation);
@@ -128,31 +128,8 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     }
     OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
 
-    std::vector<std::pair<std::shared_ptr<Building>, vector3dfp> > moved;
-    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter1.next())) {
-        vector3dfp old_pos = building->getPosition();
-        building->process(delta);
-        Octree *octant = octiter1.getCurrent();
-        if (!octant->belongsHere(building->getPosition())) {
-            moved.push_back(std::pair<std::shared_ptr<Building>, vector3dfp>(building, old_pos));
-            // printf("MOOOOOOOOOOOOOOOVE %f %f %f ; %f %f %f -> %f %f %f\n", 
-            // building->getPosition().X , building->getPosition().Y, building->getPosition().Z,
-            // octant->_corner1.X, octant->_corner1.Y, octant->_corner1.Z,
-            // octant->_corner2.X, octant->_corner2.Y, octant->_corner2.Z);
-        }
-    }
-
-    for (auto iter = moved.begin(); iter != moved.end(); iter++) {
-
-        std::shared_ptr<Building> tomove = (*iter).first;
 
 
-        _buildings.erase_if([tomove](std::shared_ptr<OctreeNode> n) { 
-            return std::static_pointer_cast<Building>(n) == tomove; });       
-        
-
-        _buildings.insert(tomove);
-    }
     
     vector3dfp movement;
     quaternion rotation;
@@ -270,6 +247,35 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             }    
         }
     }
+
+
+    // PROCESS BUILDINGS
+    std::vector<std::pair<std::shared_ptr<Building>, vector3dfp> > moved;
+    while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter1.next())) {
+        vector3dfp old_pos = building->getPosition();
+        building->process(delta);
+        Octree *octant = octiter1.getCurrent();
+        if (!octant->belongsHere(building->getPosition())) {
+            moved.push_back(std::pair<std::shared_ptr<Building>, vector3dfp>(building, old_pos));
+            // printf("MOOOOOOOOOOOOOOOVE %f %f %f ; %f %f %f -> %f %f %f\n", 
+            // building->getPosition().X , building->getPosition().Y, building->getPosition().Z,
+            // octant->_corner1.X, octant->_corner1.Y, octant->_corner1.Z,
+            // octant->_corner2.X, octant->_corner2.Y, octant->_corner2.Z);
+        }
+    }
+
+    for (auto iter = moved.begin(); iter != moved.end(); iter++) {
+        std::shared_ptr<Building> tomove = (*iter).first;
+
+        _buildings.erase_if([tomove](std::shared_ptr<OctreeNode> n) { 
+            return std::static_pointer_cast<Building>(n) == tomove; });       
+        
+        _buildings.insert(tomove);
+    }
+
+
+
+
 
     _camera_orientation = _camera_orientation * rotation;
     Transforms::rotate(movement, _camera_orientation);  

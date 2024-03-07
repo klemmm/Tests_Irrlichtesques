@@ -84,7 +84,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
 }
 
 void World::position_and_orient_camera(const vector3dfp &position, const quaternion &orientation) {
-        auto forward = vector3df(0, 0, 100);
+        auto forward = vector3df(0, 0, 1);
         auto up = vector3df(0, 1, 0);
 
         Transforms::rotate(forward, orientation);
@@ -196,7 +196,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
                 quaternion ship_orientation = ship->getOrientation();
                 quaternion ship_rotation;
 
-                float rotation_cap = MAX_ROTATION*delta;
+                float rotation_cap = MAX_ROTATION*delta*10;
                 float rotate_x = MOUSE_SENSITIVITY*(0.5f - mouse_movement.X);
                 float rotate_y = MOUSE_SENSITIVITY*(0.5f - mouse_movement.Y);
 
@@ -222,6 +222,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
                 ship->setOrientation(ship_orientation); 
             }     
         } else {
+            /*
             if (mouse_movement.X < 0.5f) {
                 rotation.fromAngleAxis(MOUSE_SENSITIVITY*(0.5f - mouse_movement.X), vector3df(0.0, 1.0, 0.0));
             }  
@@ -236,6 +237,7 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
             if (mouse_movement.Y > 0.5f) {
                 rotation.fromAngleAxis(MOUSE_SENSITIVITY*(0.5f - mouse_movement.Y), vector3df(1.0, 0.0, 0.0));
             }     
+            */
             _camera_orientation = _camera_orientation * rotation;    
 
             if (kbd.isKeyDown(irr::KEY_KEY_A)) {
@@ -276,16 +278,20 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
 
 
-
     _camera_orientation = _camera_orientation * rotation;
     Transforms::rotate(movement, _camera_orientation);  
     _camera_position = _camera_position + movement;
 
+    irr::core::quaternion co;
     if (auto ship = _boarded.lock()) {
         vector3dfp rotated_position = _camera_position;
         Transforms::rotate(rotated_position, ship->getOrientation());
         position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
+        co = ship->getOrientation() * _camera_orientation;
+    
+
     } else {
+         co = _camera_orientation;
         position_and_orient_camera(_camera_position, _camera_orientation);
     }
 
@@ -312,6 +318,13 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
     core::line3d<f32> ray;
     ray.start = _camera->getPosition();
     ray.end = ray.start + (_camera->getTarget() - ray.start).normalize() * 1000.0f;
+
+    co.makeInverse();
+    irr::core::quaternion so = _me->getOrientation();
+    so.makeInverse();
+    //
+    //printf("co: %f %f %f %f\n", co.X, co.Y, co.Z, co.W);
+    printf("so: %f %f %f %f\n", so.X, so.Y, so.Z, so.W);
 
     float distance = FLT_MAX;
     float cur_dist;

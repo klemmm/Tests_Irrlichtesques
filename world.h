@@ -16,6 +16,9 @@ public:
 
     World(irr::scene::ISceneManager*);
     void process(float, Hud &hud, IKkbdStatus&, const irr::core::vector2df&);
+    void updateHud(Hud &hud);
+
+    void handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const irr::core::vector2df& mouse_movement);
 
     inline bool isInvOpen(void) { return _invOpen; }
 
@@ -29,7 +32,14 @@ public:
     }
 
 private:
+    std::shared_ptr<Building> collisionBuilding;
+    irr::core::vector3di block_coords, adjacent_block_coords;
+
     void position_and_orient_camera(const vector3dfp &position, const irr::core::quaternion &orientation);
+    void prepareScene(void);
+    void updatePointedAt(void);
+    void updateOctree(void);
+    void processBuildings(float);
 
     irr::scene::ISceneManager *_smgr;
 

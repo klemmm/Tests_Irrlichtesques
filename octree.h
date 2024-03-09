@@ -170,7 +170,7 @@ public:
         _node_iter++;
         return node;
     } 
-    inline Octree *getCurrent(void) { return _current; }
+    inline bool belongsHere(const vector3dfp &point) { return _current->belongsHere(point); }
 };
 
 class OctreeBoundedNodeIterator {
@@ -201,7 +201,7 @@ public:
         return node;
     } 
 
-    inline Octree *getCurrent(void) { return _current; }
+    inline bool belongsHere(const vector3dfp &point) { return _current->belongsHere(point); }
 };
 
 

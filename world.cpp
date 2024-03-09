@@ -131,12 +131,18 @@ void World::updateHud(Hud &hud) {
 
 void World::prepareScene(void) {
     // PREPARE SCENE
+
+    std::shared_ptr<Building> hilightedBuildingLocked = _hilightedBuilding.lock();
+    for (auto iter = _meshNeedsUpdate.begin(); iter != _meshNeedsUpdate.end(); iter++) {        
+        (*iter)->updateMesh(TextureId::DEFAULT, hilightedBuildingLocked == (*iter), _hilightedBlock);
+    }
+
     if (auto ship = _boarded.lock()) {
-        vector3dfp rotated_position = _camera_position;
+        vector3dfp rotated_position = _relativeCameraPosition;
         Transforms::rotate(rotated_position, ship->getOrientation());
-        position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _camera_orientation);
+        position_and_orient_camera(rotated_position + ship->getPosition(), ship->getOrientation() * _relativeCameraOrientation);
     } else {
-        position_and_orient_camera(_camera_position, _camera_orientation);
+        position_and_orient_camera(_relativeCameraPosition, _relativeCameraOrientation);
     }
 
 
@@ -158,62 +164,52 @@ void World::handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const vector2d
         _wasRightPressed = false;
     }
 
-    std::unordered_set<std::shared_ptr<Building> > meshNeedsUpdate;
 
 
 
-    std::shared_ptr<Building> new_hilighted_building = _hilighted_building.lock();
-    irr::core::vector3di new_hilighted_block = _hilighted_block;
+    std::shared_ptr<Building> new_hilighted_building = _hilightedBuilding.lock();
+    irr::core::vector3di new_hilighted_block = _hilightedBlock;
 
 
 
-    if (collisionBuilding) {
-        new_hilighted_building = collisionBuilding;
-        new_hilighted_block = block_coords;
+    if (_pointedAtBuilding) {
+        new_hilighted_building = _pointedAtBuilding;
+        new_hilighted_block = _pointedAtBlockCoords;
     } else {
         new_hilighted_building = nullptr;
     }
 
-    auto _hilighted_building_locked = _hilighted_building.lock();
-
-    
-    if (_hilighted_building_locked)
-        _hilighted_building_locked->removeHilight();
-    
-    if (collisionBuilding)
-        collisionBuilding->hilightBlock(new_hilighted_block);
+    auto _hilighted_building_locked = _hilightedBuilding.lock();
     
     if (_hilighted_building_locked != new_hilighted_building) {
         if (_hilighted_building_locked)
-            meshNeedsUpdate.insert(_hilighted_building_locked);
-        if (collisionBuilding)
-            meshNeedsUpdate.insert(collisionBuilding);            
-    } else if (_hilighted_block != new_hilighted_block) {
-        if (collisionBuilding)
-            meshNeedsUpdate.insert(collisionBuilding);
+            _meshNeedsUpdate.insert(_hilighted_building_locked);
+        if (_pointedAtBuilding)
+            _meshNeedsUpdate.insert(_pointedAtBuilding);            
+    } else if (_hilightedBlock != new_hilighted_block) {
+        if (_pointedAtBuilding)
+            _meshNeedsUpdate.insert(_pointedAtBuilding);
     }
-    _hilighted_building = new_hilighted_building;
-    _hilighted_block = new_hilighted_block;
+    _hilightedBuilding = new_hilighted_building;
+    _hilightedBlock = new_hilighted_block;
         
     if (kbd.isLeftPressed() && !_wasLeftPressed) {
         _wasLeftPressed = true;
-        if (collisionBuilding) {
-            meshNeedsUpdate.insert(collisionBuilding);
-            collisionBuilding->delBlock(block_coords);
+        if (_pointedAtBuilding) {
+            _meshNeedsUpdate.insert(_pointedAtBuilding);
+            _pointedAtBuilding->delBlock(_pointedAtBlockCoords);
         }        
     }
 
     if (kbd.isRightPressed() && !_wasRightPressed) {
         _wasRightPressed = true;
-        if (collisionBuilding) {
-            meshNeedsUpdate.insert(collisionBuilding);
-            collisionBuilding->addBlock(adjacent_block_coords, vector2di(_held/3, _held%3));
+        if (_pointedAtBuilding) {
+            _meshNeedsUpdate.insert(_pointedAtBuilding);
+            _pointedAtBuilding->addBlock(_pointedAtAdjacentBlockCoords, vector2di(_held/3, _held%3));
         }        
     }
 
-    for (auto iter = meshNeedsUpdate.begin(); iter != meshNeedsUpdate.end(); iter++) {
-        (*iter)->updateMesh(TextureId::DEFAULT);
-    }
+
 
     if (kbd.isKeyDown(irr::KEY_LEFT)) {
         if (!_wasKeyPressed) {
@@ -240,20 +236,20 @@ void World::handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const vector2d
     } else if (kbd.isKeyDown(irr::KEY_KEY_B)) {
         if (!_wasKeyPressed) {
             auto ship = _boarded.lock();
-            if (ship  == nullptr && collisionBuilding) {
+            if (ship  == nullptr && _pointedAtBuilding) {
                 /* board */
-                _boarded = collisionBuilding;
-                quaternion inv_ship_rot = collisionBuilding->getOrientation();
+                _boarded = _pointedAtBuilding;
+                quaternion inv_ship_rot = _pointedAtBuilding->getOrientation();
                 inv_ship_rot.makeInverse();
-                _camera_orientation = inv_ship_rot * _camera_orientation;
-                _camera_position = _camera_position - collisionBuilding->getPosition();
-                Transforms::rotate(_camera_position, inv_ship_rot);
+                _relativeCameraOrientation = inv_ship_rot * _relativeCameraOrientation;
+                _relativeCameraPosition = _relativeCameraPosition - _pointedAtBuilding->getPosition();
+                Transforms::rotate(_relativeCameraPosition, inv_ship_rot);
                 
             } else if (ship != nullptr) {
                 /* unboard */
-                Transforms::rotate(_camera_position, ship->getOrientation());
-                _camera_position = _camera_position + ship->getPosition();
-                _camera_orientation = ship->getOrientation() * _camera_orientation;
+                Transforms::rotate(_relativeCameraPosition, ship->getOrientation());
+                _relativeCameraPosition = _relativeCameraPosition + ship->getPosition();
+                _relativeCameraOrientation = ship->getOrientation() * _relativeCameraOrientation;
                 _boarded.reset();
                 _piloting = false;
 
@@ -370,7 +366,7 @@ void World::handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const vector2d
             if (mouse_movement.X > 0.5f) {
                 rotation.fromAngleAxis(MOUSE_SENSITIVITY*(0.5f - mouse_movement.X), vector3df(0.0, 1.0, 0.0));
             } 
-            _camera_orientation = _camera_orientation * rotation;
+            _relativeCameraOrientation = _relativeCameraOrientation * rotation;
 
             if (mouse_movement.Y < 0.5f) {
                 rotation.fromAngleAxis(MOUSE_SENSITIVITY*(0.5f - mouse_movement.Y), vector3df(1.0, 0.0, 0.0));
@@ -378,7 +374,7 @@ void World::handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const vector2d
             if (mouse_movement.Y > 0.5f) {
                 rotation.fromAngleAxis(MOUSE_SENSITIVITY*(0.5f - mouse_movement.Y), vector3df(1.0, 0.0, 0.0));
             }     
-            _camera_orientation = _camera_orientation * rotation;    
+            _relativeCameraOrientation = _relativeCameraOrientation * rotation;    
 
             if (kbd.isKeyDown(irr::KEY_KEY_A)) {
                 rotation.fromAngleAxis(-ROTATION_SPEED*delta, vector3df(0.0, 0.0, 1.0));
@@ -390,16 +386,17 @@ void World::handleInputs(float delta, Hud &hud, IKkbdStatus &kbd, const vector2d
         }
     }
 
-    _camera_orientation = _camera_orientation * rotation;
-    Transforms::rotate(movement, _camera_orientation);  
-    _camera_position = _camera_position + movement;
+    _relativeCameraOrientation = _relativeCameraOrientation * rotation;
+    Transforms::rotate(movement, _relativeCameraOrientation);  
+    _relativeCameraPosition = _relativeCameraPosition + movement;
 
 }
 
 void World::updatePointedAt(void) {
     /* PROCESS COLLISION */
+    _pointedAtBuilding = nullptr;
     
-    vector3di tmp_block_coords, tmp_adjacent_block_coords;
+    vector3di tmp__pointedAtBlockCoords, tmp__pointedAtAdjacentBlockCoords;
 
     core::line3d<f32> ray;
     ray.start = _camera->getPosition();
@@ -417,38 +414,34 @@ void World::updatePointedAt(void) {
     
     while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter.next())) {
         
-        if (building->getCollisionCoords(ray, cur_dist, tmp_block_coords, tmp_adjacent_block_coords)) {
+        if (building->getCollisionCoords(ray, cur_dist, tmp__pointedAtBlockCoords, tmp__pointedAtAdjacentBlockCoords)) {
             if (cur_dist < distance) {
                 distance = cur_dist;
-                block_coords = tmp_block_coords;
-                adjacent_block_coords = tmp_adjacent_block_coords;
-                collisionBuilding = building;                
+                _pointedAtBlockCoords = tmp__pointedAtBlockCoords;
+                _pointedAtAdjacentBlockCoords = tmp__pointedAtAdjacentBlockCoords;
+                _pointedAtBuilding = building;                
             }
         }
     }
-
 }
 
 void World::processBuildings(float delta) {
-    OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
+    std::vector<std::shared_ptr<Building> > to_migrate;
 
-    std::vector<std::shared_ptr<Building> > moved;
+    OctreeNodeIterator octiter1 = OctreeNodeIterator(_buildings);
     while (std::shared_ptr<Building> building = std::static_pointer_cast<Building>(octiter1.next())) {
-        vector3dfp old_pos = building->getPosition();
         building->process(delta);
-        Octree *octant = octiter1.getCurrent();
-        if (!octant->belongsHere(building->getPosition())) {
-            moved.push_back(std::shared_ptr<Building>(building));
+        if (!octiter1.belongsHere(building->getPosition())) {
+            to_migrate.push_back(std::shared_ptr<Building>(building));
         }
     }
 
-    for (auto iter = moved.begin(); iter != moved.end(); iter++) {
-        std::shared_ptr<Building> tomove = (*iter);
-
-        _buildings.erase_if([tomove](std::shared_ptr<OctreeNode> n) { 
-            return std::static_pointer_cast<Building>(n) == tomove; });       
+    for (auto iter = to_migrate.begin(); iter != to_migrate.end(); iter++) {
+        std::shared_ptr<Building> building = (*iter);
+        _buildings.erase_if([building](std::shared_ptr<OctreeNode> n) { 
+            return std::static_pointer_cast<Building>(n) == building; });       
         
-        _buildings.insert(tomove);
+        _buildings.insert(building);
     }       
 }
 

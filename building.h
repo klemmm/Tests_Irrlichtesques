@@ -77,24 +77,16 @@ public:
             chunk->delBlock(where - chunk->getRelCoords());
     }    
 
-    inline void hilightBlock(const irr::core::vector3di &where) {
-        std::shared_ptr<Chunk> chunk = findOrCreateChunk(where);
-        if (chunk != nullptr)
-            chunk->hilightBlock(where - chunk->getRelCoords());
-    }
-    
-    inline void removeHilight() {
-        OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
-        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
-            chunk->removeHilight(); /* FIXME remove le truc que sur le chunk concerné ou gérer ca ailleurs (le hilight devrait etre un singleton ou un truc dans world / hud)*/
-        }
-    }
-
-    void updateMesh(const TextureId &tid) {
+    void updateMesh(const TextureId&tid, bool hilight = false, const irr::core::vector3di &_hilightedBlock = irr::core::vector3di()) {
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
         //printf("On lance le updatemesh\n");
-        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
-            chunk->updateMesh(tid);
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {            
+            if (hilight && chunk->belongsHere(_hilightedBlock)) {
+                chunk->updateMesh(tid, true, _hilightedBlock - chunk->getRelCoords());
+            } else {
+                chunk->updateMesh(tid, false, irr::core::vector3di());
+ 
+            }
         }
         // printf("on finit le updatemesh\n");
     }
@@ -152,7 +144,7 @@ public:
 
     
     virtual bool canMove(void) const { return false; }
-    bool getCollisionCoords(const irr::core::line3df &ray, float &distance, irr::core::vector3di &block_coords, irr::core::vector3di &adjacent_block_coords);
+    bool getCollisionCoords(const irr::core::line3df &ray, float &distance, irr::core::vector3di &_pointedAtBlockCoords, irr::core::vector3di &_pointedAtAdjacentBlockCoords);
 };
 
 #endif

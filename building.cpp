@@ -18,7 +18,7 @@ void Building::process(float delta) {
 }
 
 
-bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance, irr::core::vector3di &block_coords, irr::core::vector3di &adjacent_block_coords) {
+bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance, irr::core::vector3di &_pointedAtBlockCoords, irr::core::vector3di &_pointedAtAdjacentBlockCoords) {
         vector3df collisionPoint;
         triangle3df collisionTriangle;
         ISceneNode *collisionNode = nullptr;
@@ -70,8 +70,8 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
         irr::core::vector3df adjacent_center = (collisionTriangle.pointA + collisionTriangle.pointC)/2 - v.crossProduct(u)/(Constants::BLOCK_SIZE*4);
 
 
-        block_coords = irr::core::vector3di(round(center.X/(Constants::BLOCK_SIZE*2)), round(center.Y/(Constants::BLOCK_SIZE*2)), round(center.Z/(Constants::BLOCK_SIZE*2)));
-        adjacent_block_coords = irr::core::vector3di(round(adjacent_center.X/(Constants::BLOCK_SIZE*2)), round(adjacent_center.Y/(Constants::BLOCK_SIZE*2)), round(adjacent_center.Z/(Constants::BLOCK_SIZE*2)));
+        _pointedAtBlockCoords = irr::core::vector3di(round(center.X/(Constants::BLOCK_SIZE*2)), round(center.Y/(Constants::BLOCK_SIZE*2)), round(center.Z/(Constants::BLOCK_SIZE*2)));
+        _pointedAtAdjacentBlockCoords = irr::core::vector3di(round(adjacent_center.X/(Constants::BLOCK_SIZE*2)), round(adjacent_center.Y/(Constants::BLOCK_SIZE*2)), round(adjacent_center.Z/(Constants::BLOCK_SIZE*2)));
 
         return true;
 }

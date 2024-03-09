@@ -21,14 +21,13 @@ Chunk::Chunk(irr::scene::ISceneManager *smgr, Building* building, const irr::cor
         _mesh->addMeshBuffer(_meshBuffer);
         _node = nullptr;  
         _selector = nullptr;       
-        _hasHilight = false;
         _chunk_id = _next_id;
         _next_id++;
         _map[_chunk_id] = this;
 }
 
 
-void Chunk::updateMesh(const TextureId &texture_id) {
+void Chunk::updateMesh(const TextureId &texture_id, bool _hilight, const irr::core::vector3di &_hilightedBlock) {
        // printf("Chunk::updateMesh rel_coords=%d %d %d\n", _rel_coords.X, _rel_coords.Y, _rel_coords.Z);
         if (_node != nullptr)
                 _node->remove();
@@ -47,7 +46,7 @@ void Chunk::updateMesh(const TextureId &texture_id) {
         
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
         while (std::shared_ptr<Block> block = std::static_pointer_cast<Block>(octiter.next())) {
-                SColor color = (_hasHilight && _hilighted == block->where) ? SColor(255,255,255,255) : SColor(255,128,128,128);
+                SColor color = (_hilight && (_hilightedBlock == block->where)) ? SColor(255,255,255,255) : SColor(255,128,128,128);
                // printf("put block in mesh\n");
                 
                 // Up

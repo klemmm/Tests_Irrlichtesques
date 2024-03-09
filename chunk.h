@@ -108,9 +108,6 @@ private:
     irr::scene::ISceneNode *_node;
     irr::scene::ITriangleSelector *_selector;
     
-    irr::core::vector3di _hilighted;
-    bool _hasHilight;
-
     irr::s32  _chunk_id;
 
     size_t _nblocks;
@@ -190,17 +187,7 @@ public:
         _nblocks--;
     }
 
-    inline void hilightBlock(const irr::core::vector3di &where) {
-        _hilighted = where;
-        _hasHilight = true;
-    }
-    
-    inline void removeHilight() {
-        _hasHilight = false;
-    }
-
-
-    void updateMesh(const TextureId&);
+    void updateMesh(const TextureId&, bool _hilight, const irr::core::vector3di &_hilightedBlock);
 
     void updatePositionAndOrientation(void);
 

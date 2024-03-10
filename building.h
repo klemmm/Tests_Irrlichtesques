@@ -139,7 +139,8 @@ public:
         _orientation = orientation;
     }
     inline bool bonk(std::shared_ptr<Building> other) {
-
+        return collision(other);
+/*
         OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
 
         while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {
@@ -150,6 +151,7 @@ public:
 
             }
         }
+        */
 #define NUMBONKS 10000L
 
         //struct timespec start, stop;
@@ -173,6 +175,9 @@ public:
         return false;
     }
     
+
+    bool collision(std::shared_ptr<Building> other);
+
 
     
     virtual bool canMove(void) const { return false; }

@@ -7,7 +7,7 @@ void Octree::insert(std::shared_ptr<OctreeNode> node) {
 
     if (_nodes.size() > _max_size) {
 
-        vector3dfp middle = (_corner1 + _corner2)/2;
+        vector3dfp middle = getMiddle();
         
         _octants[0] = 
             new Octree(vector3dfp(_corner1.X, _corner1.Y, _corner1.Z), vector3dfp(middle.X, middle.Y, middle.Z));

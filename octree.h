@@ -47,6 +47,53 @@ public:
             _octants[i] = nullptr;
         }
     }
+
+    inline vector3dfp getMiddle(void) {
+        return (_corner1 + _corner2) / 2;
+    }
+
+    inline fpnum getSize(void) {
+        return _corner2.X - _corner1.X;
+    }
+
+    template<typename OctantChecker, typename NodeChecker>
+    inline bool collisionCheck(Octree &other, OctantChecker oc, NodeChecker nc) {
+
+        if (!oc(*this, other))
+            return false;
+
+        if (isSplitted() && other.isSplitted()) {
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    if (_octants[i]->collisionCheck(*other._octants[j], oc, nc))
+                        return true;
+                }
+            }
+            return false;
+        } else if (isSplitted() && !other.isSplitted()) {
+            for (int i = 0; i < 8; i++) {
+                if (_octants[i]->collisionCheck(other, oc, nc))
+                    return true;
+            }
+            return false;            
+        } else if (!isSplitted() && other.isSplitted()) {
+            for (int i = 0; i < 8; i++) {
+                if (collisionCheck(*other._octants[i], oc, nc))
+                    return true;
+            }
+            return false;           
+        } else {
+            for (auto iter = begin(); iter != end(); iter++) {
+                for (auto iter2 = other.begin(); iter2 != other.end(); iter2++) {
+                    if (nc((*iter), (*iter2)))
+                        return true;
+                }
+            }
+            return false;
+        }
+        
+    }
+
     inline ~Octree(void) {
         //printf("bye\n");
         for (int i = 0; i < 8; i++) {

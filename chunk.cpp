@@ -136,8 +136,45 @@ Chunk* Chunk::getChunkFromId(irr::s32 id) {
         } else return nullptr;
 }
 
+bool Chunk::collision(std::shared_ptr<Chunk> other) {
+
+        vector3dfp rel_pos = vector3dfp(_rel_coords.X, _rel_coords.Y, _rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        Transforms::rotate(rel_pos, _building->getOrientation());
+        vector3dfp chunk1Position = _building->getPosition() + rel_pos;
+
+        vector3dfp rel_pos2 = vector3dfp(other->_rel_coords.X, other->_rel_coords.Y, other->_rel_coords.Z) * Constants::BLOCK_SIZE*2;
+        Transforms::rotate(rel_pos2, other->_building->getOrientation());
+        vector3dfp chunk2Position = other->_building->getPosition() + rel_pos2;
+
+        irr::core::quaternion chunk1Orientation = _building->getOrientation();
+        irr::core::quaternion chunk2Orientation = other->_building->getOrientation();
+
+
+        return _blocks.collisionCheck(other->_blocks, 
+                [&chunk1Position, &chunk2Position, &chunk1Orientation, &chunk2Orientation](Octree &a, Octree &b) {      
+                        vector3dfp middle1 = a.getMiddle() * Constants::BLOCK_SIZE*2;
+                        vector3dfp middle2 = b.getMiddle() * Constants::BLOCK_SIZE*2;
+
+                        Transforms::rotate(middle1, chunk1Orientation);
+                        Transforms::rotate(middle2, chunk2Orientation);
+
+                        middle1 += chunk1Position;
+                        middle2 += chunk2Position;
+                        
+                        fpnum size = a.getSize() * Constants::BLOCK_SIZE *2 ;
+                        return ((middle1/256).getDistanceFromSQ(middle2/256) < (size*size*3)/65536);
+                },
+                [&chunk1Position, &chunk2Position, &chunk1Orientation, &chunk2Orientation](std::shared_ptr<OctreeNode> a, std::shared_ptr<OctreeNode> b) {
+                        return std::static_pointer_cast<Block>(a)->SAT(chunk1Position, chunk2Position, chunk1Orientation, chunk2Orientation, std::static_pointer_cast<Block>(b));
+                }
+        );
+}
 
 bool Chunk::bonk(std::shared_ptr<Chunk> other) {
+        return collision(other);
+        
+        /*
+
         OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
         
 
@@ -165,14 +202,13 @@ bool Chunk::bonk(std::shared_ptr<Chunk> other) {
                 
 
 
-                //printf("bonking %d pos %f,%f,%f rel2 %f %f %f\n", i, center.X, center.Y, center.Z, rel2.X, rel2.Y, rel2.Z);
+
                 vector3dfp radius = vector3dfp(1.5f, 1.5f, 1.5f);
                 vector3dfp corner1 = vector3dfp(rel2 - radius);
                 vector3dfp corner2 = vector3dfp(rel2 + radius);
                 OctreeBoundedNodeIterator octiter2 = OctreeBoundedNodeIterator(other->_blocks, corner1, corner2);  
                 j = 0;      
                 while (std::shared_ptr<Block> block2 = std::static_pointer_cast<Block>(octiter2.next())) {
-                        //printf("testing with abspos=%f %f %f, abspos2= %f %f %f\n", abs_pos.X, abs_pos.Y, abs_pos.Z, abs_pos2.X, abs_pos2.Y, abs_pos2.Z);
                         fflush(stdout);
                         if (block->bonk(abs_pos, abs_pos2, _building->getOrientation(), other->_building->getOrientation(), block2)) return true;
                         j++;
@@ -180,4 +216,5 @@ bool Chunk::bonk(std::shared_ptr<Chunk> other) {
                 i++;
         }
         return false;
+        */
 }

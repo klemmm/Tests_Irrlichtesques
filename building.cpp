@@ -93,7 +93,7 @@ std::pair<vector3dfp, vector3dfp> Building::prepareOtherBbox(const Building &oth
         // apply rotation
         Transforms::rotate(tmpMin, other.getOrientation());
         Transforms::rotate(tmpMax, other.getOrientation());
-        
+
         std::pair<vector3dfp, vector3dfp> bbox = std::pair<vector3dfp, vector3dfp>(tmpMin, tmpMax);
 
         
@@ -123,3 +123,37 @@ std::pair<vector3dfp, vector3dfp> Building::prepareOtherBbox(const Building &oth
         return transformedBbox;
 
 }
+
+bool Building::collision(std::shared_ptr<Building> other) {
+
+        vector3dfp building1Position = getPosition();
+        vector3dfp building2Position = other->getPosition();
+
+        irr::core::quaternion building1Orientation = getOrientation();
+        irr::core::quaternion building2Orientation = other->getOrientation();
+
+
+        return _chunks.collisionCheck(other->_chunks, 
+                [&building1Position, &building2Position, &building1Orientation, &building2Orientation](Octree &a, Octree &b) {      
+                        vector3dfp middle1 = a.getMiddle() * Constants::BLOCK_SIZE*2;
+                        vector3dfp middle2 = b.getMiddle() * Constants::BLOCK_SIZE*2;
+
+                        Transforms::rotate(middle1, building1Orientation);
+                        Transforms::rotate(middle2, building2Orientation);
+
+                        middle1 += building1Position;
+                        middle2 += building2Position;
+                        
+                        fpnum size = a.getSize() * Constants::BLOCK_SIZE *2 ;
+                        if (size >= 256)
+                                return ((middle1/256).getDistanceFromSQ(middle2/256) < ((size/256)*(size/256)*3));
+                        else /* FIXME */
+                                return ((middle1/256).getDistanceFromSQ(middle2/256) < ((size)*(size)*3)/65536);
+                        
+                },
+                [&building1Position, &building2Position, &building1Orientation, &building2Orientation](std::shared_ptr<OctreeNode> a, std::shared_ptr<OctreeNode> b) {
+                        return std::static_pointer_cast<Chunk>(a)->collision(std::static_pointer_cast<Chunk>(b));                        
+                }
+        );
+}
+

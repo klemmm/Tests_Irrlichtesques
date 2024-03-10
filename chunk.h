@@ -20,7 +20,7 @@ struct Block : public OctreeNode {
     irr::core::vector3di where;        
     irr::core::vector2di texture_coords;
 
-    inline bool bonk(const vector3dfp &pos, vector3dfp &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const std::shared_ptr<Block> other) {
+    inline bool SAT(const vector3dfp &pos, vector3dfp &pos2, const irr::core::quaternion &rot, const irr::core::quaternion &rot2, const std::shared_ptr<Block> other) {
         vector3dfp rel = vector3dfp(where.X, where.Y, where.Z)*Constants::BLOCK_SIZE*2;
         vector3dfp rel2 = vector3dfp(other->where.X, other->where.Y, other->where.Z)*Constants::BLOCK_SIZE*2;
         Transforms::rotate(rel, rot);
@@ -218,6 +218,8 @@ public:
     inline irr::scene::ITriangleSelector *getSelector(void) const {
         return _selector;
     }
+
+    bool collision(std::shared_ptr<Chunk> other);
 
     bool bonk(std::shared_ptr<Chunk> other);
 

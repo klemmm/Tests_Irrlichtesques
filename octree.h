@@ -15,7 +15,7 @@ public:
         _position = position;
     }    
 
-    inline vector3dfp getPosition(void) {
+    inline vector3dfp getPosition(void) const {
         return _position;
     }
 private:

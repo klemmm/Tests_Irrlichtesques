@@ -81,7 +81,7 @@ int main(void) {
     ICursorControl *cc = device->getCursorControl();
     cc->setVisible(false);
 
-    World world(smgr);
+    World *world = new World(smgr);
 
     Hud hud(guienv);
 
@@ -96,12 +96,12 @@ int main(void) {
         if (kbdstatus.isKeyDown(irr::KEY_ESCAPE))
             break;
 
-        cc->setVisible(world.isInvOpen());
+        cc->setVisible(world->isInvOpen());
         vector2df mouse_movement = cc->getRelativePosition();
       
         
-        world.process(delta, hud, kbdstatus, mouse_movement);
-        if (!world.isInvOpen())
+        world->process(delta, hud, kbdstatus, mouse_movement);
+        if (!world->isInvOpen())
             cc->setPosition(0.5f, 0.5f);              
         hud.process(delta);
 
@@ -111,7 +111,8 @@ int main(void) {
         hud.draw(driver);
         driver->endScene();
     }
-    world.end();
+    world->end();
+    delete world;
     device->drop();
     return 0;
 }

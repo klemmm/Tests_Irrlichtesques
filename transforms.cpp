@@ -1,4 +1,5 @@
 #include "transforms.h"
+#include "debug.h"
 
 void Transforms::rotate(irr::core::vector3df &vec, const irr::core::quaternion &rot) {
     irr::core::quaternion rot_inv = rot;
@@ -15,6 +16,14 @@ void Transforms::rotate(vector3dfp &vec, const irr::core::quaternion &rot) {
 }
 
 void Transforms::orient_node(irr::scene::ISceneNode &node, const irr::core::quaternion &rot) {
+    irr::core::quaternion rot_inv = rot;
+    rot_inv.makeInverse();
+    irr::core::vector3df euler;
+    rot_inv.toEuler(euler);    
+    node.setRotation(euler * irr::core::RADTODEG);
+}
+
+void Transforms::orient_node(DebugCuboid &node, const irr::core::quaternion &rot) {
     irr::core::quaternion rot_inv = rot;
     rot_inv.makeInverse();
     irr::core::vector3df euler;

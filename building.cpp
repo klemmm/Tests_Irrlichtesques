@@ -75,3 +75,51 @@ bool Building::getCollisionCoords(const irr::core::line3df &ray, float &distance
 
         return true;
 }
+
+
+std::pair<vector3dfp, vector3dfp> Building::prepareOtherBbox(const Building &other) {
+        irr::core::quaternion rotation = getOrientation();
+        rotation.makeInverse();
+        vector3dfp translation = -getPosition();
+
+        /* compute absolute position of other's bbox */
+        auto tmp = other.getBoundingBox();
+        // first scale from block unit to point unit
+        vector3dfp tmpMin = vector3dfp(tmp.first.X * Constants::BLOCK_SIZE*2 - Constants::BLOCK_SIZE, tmp.first.Y* Constants::BLOCK_SIZE*2 - Constants::BLOCK_SIZE, tmp.first.Z* Constants::BLOCK_SIZE*2 - Constants::BLOCK_SIZE);
+        vector3dfp tmpMax = vector3dfp(tmp.second.X* Constants::BLOCK_SIZE*2 + Constants::BLOCK_SIZE, tmp.second.Y* Constants::BLOCK_SIZE*2 + Constants::BLOCK_SIZE, tmp.second.Z* Constants::BLOCK_SIZE*2 + Constants::BLOCK_SIZE);
+        // apply translation
+        tmpMin += other.getPosition();
+        tmpMax += other.getPosition();
+        // apply rotation
+        Transforms::rotate(tmpMin, other.getOrientation());
+        Transforms::rotate(tmpMax, other.getOrientation());
+        
+        std::pair<vector3dfp, vector3dfp> bbox = std::pair<vector3dfp, vector3dfp>(tmpMin, tmpMax);
+
+        
+        vector3dfp transformedBboxMin = vector3dfp(1, 1, 1) * std::numeric_limits<std::int32_t>::max();
+        vector3dfp transformedBboxMax = vector3dfp(1, 1, 1) * std::numeric_limits<std::int32_t>::min(); 
+        
+        for (int i = 0; i < 8; i++) {
+                vector3dfp point(
+                        (i & 1) ? bbox.first.X : bbox.second.X,
+                        (i & 2) ? bbox.first.Y : bbox.second.Y,
+                        (i & 4) ? bbox.first.Z : bbox.second.Z                       
+                );
+                point += translation;
+                Transforms::rotate(point, rotation);
+                transformedBboxMin.X = std::min(transformedBboxMin.X, point.X);
+                transformedBboxMin.Y = std::min(transformedBboxMin.Y, point.Y);
+                transformedBboxMin.Z = std::min(transformedBboxMin.Z, point.Z);
+
+                transformedBboxMax.X = std::max(transformedBboxMax.X, point.X);
+                transformedBboxMax.Y = std::max(transformedBboxMax.Y, point.Y);
+                transformedBboxMax.Z = std::max(transformedBboxMax.Z, point.Z);
+
+                
+        }
+
+        auto transformedBbox = std::pair<vector3dfp, vector3dfp>(transformedBboxMin, transformedBboxMax);
+        return transformedBbox;
+
+}

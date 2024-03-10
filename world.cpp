@@ -9,6 +9,7 @@ class fpnum;
 #include "transforms.h"
 #include "constants.h"
 #include "ship.h"
+#include "debug.h"
 #include "hud.h"
 
 using namespace irr;
@@ -25,7 +26,7 @@ using namespace video;
 
 
 
-World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3dfp(-Constants::WORLD_SIZE, -Constants::WORLD_SIZE, -Constants::WORLD_SIZE), vector3dfp(Constants::WORLD_SIZE, Constants::WORLD_SIZE, Constants::WORLD_SIZE)),_wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false) {
+World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3dfp(-Constants::WORLD_SIZE, -Constants::WORLD_SIZE, -Constants::WORLD_SIZE), vector3dfp(Constants::WORLD_SIZE, Constants::WORLD_SIZE, Constants::WORLD_SIZE)),_wasLeftPressed(false), _wasRightPressed(false), _wasKeyPressed(false), _invOpen(false), _held(0), _piloting(false), _dc_me(nullptr), _dc_sta(nullptr) {
     _camera = _smgr->addCameraSceneNode();
     _camera->setFarValue(50000);
 
@@ -72,6 +73,7 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
     
     
     _me = testShip1;
+    _sta = testShip2;
 
     scene::ISceneNode* skybox = _smgr->addSkyBoxSceneNode(
         TextureLoader::get(SKYBOX_UP),
@@ -80,7 +82,20 @@ World::World (irr::scene::ISceneManager *smgr) : _smgr(smgr), _buildings(vector3
         TextureLoader::get(SKYBOX_RT),
         TextureLoader::get(SKYBOX_FT),
         TextureLoader::get(SKYBOX_BK));
-  
+
+
+    _me->updateBoundingBox();
+    _sta->updateBoundingBox();
+   // auto bbox = _sta->getBoundingBox();
+    
+
+   // printf("%d %d %d   %d %d %d\n", bbox.first.X, bbox.first.Y, bbox.first.Z, bbox.second.X, bbox.second.Y, bbox.second.Z); 
+  //  _dc_sta = new DebugCuboid(_smgr, irr::core::vector3df(bbox.first.X, bbox.first.Y, bbox.first.Z) * Constants::BLOCK_SIZE*2 - irr::core::vector3df(Constants::BLOCK_SIZE, Constants::BLOCK_SIZE, Constants::BLOCK_SIZE), Constants::BLOCK_SIZE*2 * irr::core::vector3df(bbox.second.X, bbox.second.Y, bbox.second.Z) + irr::core::vector3df(Constants::BLOCK_SIZE, Constants::BLOCK_SIZE, Constants::BLOCK_SIZE));
+    
+
+    //_dc->setPosition(irr::core::vector3df(300, 300, 300));
+    //_dc->setRotation(irr::core::vector3df(45, 45, 45));
+ 
 }
 
 void World::position_and_orient_camera(const vector3dfp &position, const quaternion &orientation) {
@@ -455,6 +470,22 @@ void World::process(float delta, Hud &hud, IKkbdStatus &kbd, const vector2df& mo
 
     processBuildings(delta);
 
-    prepareScene();
+/*    auto stapos = _sta->getPosition();
+    auto staorientation = _sta->getOrientation();
+    _dc_sta->setPosition(irr::core::vector3df(stapos.X, stapos.Y, stapos.Z));
+    Transforms::orient_node(*_dc_sta, staorientation);
 
+    _me->updateBoundingBox();
+    std::pair<vector3dfp, vector3dfp> tbbox = _sta->prepareOtherBbox(*_me);
+
+    if (_dc_me) delete _dc_me;
+    _dc_me = new DebugCuboid(_smgr, irr::core::vector3df(tbbox.first.X, tbbox.first.Y, tbbox.first.Z), irr::core::vector3df(tbbox.second.X, tbbox.second.Y, tbbox.second.Z));    
+    irr::core::vector3df top = irr::core::vector3df(tbbox.first.X, tbbox.first.Y, tbbox.first.Z);
+    irr::core::vector3df bot = irr::core::vector3df(tbbox.second.X, tbbox.second.Y, tbbox.second.Z);
+    printf("%f %f %f    %f %f %f\n", top.X, top.Y, top.Z, bot.X, bot.Y,bot.Z);
+    //exit(1);
+
+    */
+
+    prepareScene();
 }

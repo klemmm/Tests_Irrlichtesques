@@ -201,6 +201,30 @@ chunk.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/chunk.cpp.s
 .PHONY : chunk.cpp.s
 
+debug.o: debug.cpp.o
+.PHONY : debug.o
+
+# target to build an object file
+debug.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/debug.cpp.o
+.PHONY : debug.cpp.o
+
+debug.i: debug.cpp.i
+.PHONY : debug.i
+
+# target to preprocess a source file
+debug.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/debug.cpp.i
+.PHONY : debug.cpp.i
+
+debug.s: debug.cpp.s
+.PHONY : debug.s
+
+# target to generate assembly for a file
+debug.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TutoIrrlicht.dir/build.make CMakeFiles/TutoIrrlicht.dir/debug.cpp.s
+.PHONY : debug.cpp.s
+
 entity.o: entity.cpp.o
 .PHONY : entity.o
 
@@ -411,6 +435,9 @@ help:
 	@echo "... chunk.o"
 	@echo "... chunk.i"
 	@echo "... chunk.s"
+	@echo "... debug.o"
+	@echo "... debug.i"
+	@echo "... debug.s"
 	@echo "... entity.o"
 	@echo "... entity.i"
 	@echo "... entity.s"

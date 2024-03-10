@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <memory>
 #include <unistd.h>
+#include <limits>
 #include "transforms.h"
 #include "entity.h"
 #include "assets.h"
@@ -112,8 +113,12 @@ private:
 
     size_t _nblocks;
 
+    irr::core::vector3di bboxMin;
+    irr::core::vector3di bboxMax;
     static irr::s32 _next_id;
     static std::map<irr::s32, Chunk*> _map;
+
+    
 
 
 public:
@@ -121,11 +126,29 @@ public:
 
 
     inline virtual ~Chunk(void) {
-        delete _mesh;
-        delete _meshBuffer;
+        _mesh->drop();
+        _meshBuffer->drop();
         if (_selector != nullptr)
                 _selector->drop();        
         _map.erase(_chunk_id);
+    }
+
+    inline void updateBoundingBox(void) {
+        OctreeNodeIterator octiter = OctreeNodeIterator(_blocks);
+        bboxMin = irr::core::vector3di(1, 1, 1) * std::numeric_limits<std::int32_t>::max();
+        bboxMax = irr::core::vector3di(1, 1, 1) * std::numeric_limits<std::int32_t>::min();
+        while (std::shared_ptr<Block> block = std::static_pointer_cast<Block>(octiter.next())) {
+            bboxMin.X = std::min(bboxMin.X, block->where.X);
+            bboxMin.Y = std::min(bboxMin.Y, block->where.Y);
+            bboxMin.Z = std::min(bboxMin.Z, block->where.Z);
+            bboxMax.X = std::max(bboxMax.X, block->where.X);
+            bboxMax.Y = std::max(bboxMax.Y, block->where.Y);
+            bboxMax.Z = std::max(bboxMax.Z, block->where.Z);        
+        }        
+    }
+    
+    inline std::pair<irr::core::vector3di, irr::core::vector3di> getBoundingBox(void) {
+        return std::pair<irr::core::vector3di, irr::core::vector3di>(bboxMin, bboxMax);
     }
 
     inline void save(int fd) {

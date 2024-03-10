@@ -22,7 +22,14 @@ private:
 
     irr::core::quaternion _orientation;
 
+    irr::core::vector3di bboxMin;
+    irr::core::vector3di bboxMax;
+
+
+    
+
 public:
+    std::pair<vector3dfp, vector3dfp> prepareOtherBbox(const Building &);
     Building(irr::scene::ISceneManager *smgr);
     virtual void process(float);
 
@@ -33,6 +40,31 @@ public:
             chunk->save(fd);
         }
     }
+
+    inline void updateBoundingBox(void) {
+        bboxMin = irr::core::vector3di(1, 1, 1) * std::numeric_limits<std::int32_t>::max();
+        bboxMax = irr::core::vector3di(1, 1, 1) * std::numeric_limits<std::int32_t>::min();        
+        OctreeNodeIterator octiter = OctreeNodeIterator(_chunks);
+        while (std::shared_ptr<Chunk> chunk = std::static_pointer_cast<Chunk>(octiter.next())) {            
+            chunk->updateBoundingBox();
+            auto chunkBbox = chunk->getBoundingBox();
+            chunkBbox.first += chunk->getRelCoords();
+            chunkBbox.second += chunk->getRelCoords();
+            bboxMin.X = std::min(bboxMin.X, chunkBbox.first.X);
+            bboxMin.Y = std::min(bboxMin.Y, chunkBbox.first.Y);
+            bboxMin.Z = std::min(bboxMin.Z, chunkBbox.first.Z)
+            ;
+            bboxMax.X = std::max(bboxMax.X, chunkBbox.second.X);
+            bboxMax.Y = std::max(bboxMax.Y, chunkBbox.second.Y);
+            bboxMax.Z = std::max(bboxMax.Z, chunkBbox.second.Z);
+
+        }        
+    }
+
+    inline std::pair<irr::core::vector3di, irr::core::vector3di> getBoundingBox(void) const {
+        return std::pair<irr::core::vector3di, irr::core::vector3di>(bboxMin, bboxMax);
+    }
+
     inline std::shared_ptr<Chunk> findOrCreateChunk(const irr::core::vector3di &where) {
         irr::core::vector3di rel_coords = where;
         rel_coords.X &= ~(Constants::CHUNK_SIZE - 1);

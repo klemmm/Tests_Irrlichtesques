@@ -10,6 +10,7 @@
 #include "building.h"
 #include "octree.h"
 #include "hud.h"
+#include "debug.h"
 
 class World {
 
@@ -27,6 +28,11 @@ public:
         int fd = open("ship.dat", O_CREAT|O_TRUNC|O_WRONLY, 0644);
         _me->save(fd);
         close(fd);
+    }
+
+    inline ~World() {
+        delete _dc_me;
+        delete _dc_sta;
     }
 
 private:
@@ -59,8 +65,11 @@ private:
     irr::core::vector3di _hilightedBlock; /* block currently hilighted */
 
     std::shared_ptr<Building> _me;
+    std::shared_ptr<Building> _sta;
 
     std::unordered_set<std::shared_ptr<Building> > _meshNeedsUpdate;
+
+    DebugCuboid *_dc_me, *_dc_sta;
 
 };
 

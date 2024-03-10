@@ -10,7 +10,7 @@ set(CMAKE_EXE_LINKER_FLAGS_RELEASE "-pg")
 project(TutoIrrlicht LANGUAGES CXX)
 
 set( SOURCES
-	main.cpp entity.cpp chunk.cpp world.cpp assets.cpp transforms.cpp building.cpp ship.cpp hud.cpp octree.cpp fpnum.cpp
+	main.cpp entity.cpp chunk.cpp world.cpp assets.cpp transforms.cpp building.cpp ship.cpp hud.cpp octree.cpp fpnum.cpp debug.cpp
 )
 add_executable(${PROJECT_NAME} ${SOURCES})
 
